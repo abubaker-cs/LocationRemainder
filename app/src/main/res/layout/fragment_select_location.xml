@@ -9,11 +9,13 @@
             />
     </data>
 
+    <!-- Map (Location Selector) -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         >
-        <!--TODO: Add the map fragment for the user to select the location-->
+
+    <!--TODO: Add the map fragment for the user to select the location-->
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

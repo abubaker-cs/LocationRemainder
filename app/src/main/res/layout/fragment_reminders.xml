@@ -12,6 +12,7 @@
             />
     </data>
 
+    <!-- Swipe Refresh -->
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/refreshLayout"
         android:layout_width="match_parent"
@@ -25,8 +26,9 @@
             android:background="@color/white"
             >
 
+            <!-- RecyclerView -->
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/reminderssRecyclerView"
+                android:id="@+id/remindersRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:liveData="@{viewModel.remindersList}"
@@ -36,6 +38,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 />
 
+            <!-- Icon: Fallback - No Data -->
             <TextView
                 android:id="@+id/noDataTextView"
                 android:layout_width="wrap_content"
@@ -51,6 +54,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 />
 
+            <!-- Circular Progress Bar -->
             <ProgressBar
                 android:id="@+id/progressBar"
                 android:layout_width="wrap_content"
@@ -63,14 +67,16 @@
                 app:layout_constraintTop_toTopOf="parent"
                 />
 
+            <!-- FAB: Add Remainder -->
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/addReminderFAB"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/margin_normal"
+                android:contentDescription="Add Remainder"
                 android:src="@drawable/ic_add"
                 app:fabSize="normal"
-                app:layout_anchor="@id/reminderssRecyclerView"
+                app:layout_anchor="@id/remindersRecyclerView"
                 app:layout_anchorGravity="bottom|right|end"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
