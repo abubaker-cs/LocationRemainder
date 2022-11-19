@@ -11,6 +11,7 @@ android {
     defaultConfig {
         applicationId "com.udacity.project4"
         minSdkVersion rootProject.minSdkVersion
+        multiDexEnabled true
         targetSdkVersion rootProject.targetSdkVersion
         versionCode 1
         versionName "1.0"
@@ -46,6 +47,10 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
+    // Stdlib
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+    implementation 'androidx.core:core-ktx:1.9.0'
+
     // App dependencies
     implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation "androidx.legacy:legacy-support-v4:$androidXLegacySupport"
@@ -61,7 +66,7 @@ dependencies {
     implementation "androidx.cardview:cardview:$cardVersion"
 
     // ConstraintLayout
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.0-alpha04'
 
     // GSON
     implementation 'com.google.code.gson:gson:2.10'
@@ -76,6 +81,8 @@ dependencies {
 
     // implementation "androidx.lifecycle:lifecycle-extensions:$archLifecycleVersion"
     // implementation "androidx.lifecycle:lifecycle-extensions:$archLifecycleVersion"
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.0-alpha03'
 
     // ViewModel + LiveData
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$archLifecycleVersion"
@@ -102,9 +109,6 @@ dependencies {
     implementation "io.insert-koin:koin-android-compat:$koinVersion"
     implementation "io.insert-koin:koin-androidx-workmanager:$koinVersion"
     implementation "io.insert-koin:koin-androidx-navigation:$koinVersion"
-
-    // implementation "org.koin:koin-android:$koinVersion"
-    // implementation "org.koin:koin-androidx-viewmodel:$koinVersion"
 
     // Dependencies for local unit tests
     testImplementation "junit:junit:$junitVersion"
@@ -144,8 +148,13 @@ dependencies {
     androidTestImplementation('org.koin:koin-test:2.0.1') { exclude group: 'org.mockito' }
 
     //Maps & Geofencing
-    implementation "com.google.android.gms:play-services-location:$playServicesVersion"
-    implementation "com.google.android.gms:play-services-maps:$playServicesVersion"
+    // implementation "com.google.android.gms:play-services-location:$playServicesVersion"
+    // implementation "com.google.android.gms:play-services-maps:$playServicesVersion"
+    implementation 'com.google.android.gms:play-services-maps:18.1.0'
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
+
+    // Multidex
+    implementation "androidx.multidex:multidex:2.0.1"
 
 
 }
