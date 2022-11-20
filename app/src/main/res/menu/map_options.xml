@@ -1,20 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+
+    <!-- Normal Map -->
     <item
         android:id="@+id/normal_map"
         android:title="@string/normal_map"
-        app:showAsAction="never" />
+        app:showAsAction="never"
+        />
+
+    <!-- Hybrid Map -->
     <item
         android:id="@+id/hybrid_map"
         android:title="@string/hybrid_map"
-        app:showAsAction="never" />
+        app:showAsAction="never"
+        />
+
+    <!-- Satellite Map -->
     <item
         android:id="@+id/satellite_map"
         android:title="@string/satellite_map"
-        app:showAsAction="never" />
+        app:showAsAction="never"
+        />
+
+    <!-- Terrain Map -->
     <item
         android:id="@+id/terrain_map"
         android:title="@string/terrain_map"
-        app:showAsAction="never" />
+        app:showAsAction="never"
+        />
+
 </menu>

@@ -44,7 +44,7 @@ class SaveReminderViewModel(val app: Application, private val dataSource: Remind
     }
 
     /**
-     *
+     * onLocationSelected
      */
     fun onLocationSelected(selectedLocation: LatLng, selectedLocationDescription: String?) {
         latitude.value = selectedLocation.latitude
@@ -78,7 +78,7 @@ class SaveReminderViewModel(val app: Application, private val dataSource: Remind
     /**
      * Validate the entered data and show error to the user if there's any invalid data
      */
-    fun validateEnteredData(reminderData: ReminderDataItem): Boolean {
+    private fun validateEnteredData(reminderData: ReminderDataItem): Boolean {
         if (reminderData.title.isNullOrEmpty()) {
             showSnackBarInt.value = R.string.err_enter_title
             return false
