@@ -43,6 +43,9 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
         }
     }
 
+    /**
+     *
+     */
     fun onLocationSelected(selectedLocation: LatLng, selectedLocationDescription: String?) {
         latitude.value = selectedLocation.latitude
         longitude.value = selectedLocation.longitude
