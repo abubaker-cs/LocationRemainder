@@ -13,6 +13,8 @@ import org.koin.dsl.module
 
 class MyApp : Application() {
 
+    val apiKey = BuildConfig.MAPS_API_KEY
+
     override fun onCreate() {
         super.onCreate()
 
@@ -35,7 +37,7 @@ class MyApp : Application() {
                     get() as ReminderDataSource
                 )
             }
-            single { RemindersLocalRepository(get()) as ReminderDataSource }
+            single { RemindersLocalRepository(get()) }
             single { LocalDB.createRemindersDao(this@MyApp) }
         }
 
