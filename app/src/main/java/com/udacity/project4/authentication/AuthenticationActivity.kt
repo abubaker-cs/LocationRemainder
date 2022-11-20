@@ -6,6 +6,8 @@ import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.firebase.ui.auth.AuthUI
+import com.udacity.project4.Constants.SIGN_IN_RESULT_CODE
+import com.udacity.project4.Constants.TAG_LOGIN
 import com.udacity.project4.databinding.ActivityAuthenticationBinding
 import com.udacity.project4.locationreminders.RemindersActivity
 
@@ -14,11 +16,6 @@ import com.udacity.project4.locationreminders.RemindersActivity
  * signed in users to the RemindersActivity.
  */
 class AuthenticationActivity : AppCompatActivity() {
-
-    companion object {
-        const val TAG = "LoginFragment"
-        const val SIGN_IN_RESULT_CODE = 1001
-    }
 
     // Get a reference to the ViewModel scoped to this Fragment
     private val viewModel by viewModels<LoginViewModel>()
@@ -55,7 +52,7 @@ class AuthenticationActivity : AppCompatActivity() {
                 }
 
                 else -> Log.e(
-                    TAG,
+                    TAG_LOGIN,
                     "Authentication state that doesn't require any UI change $authenticationState"
                 )
             }

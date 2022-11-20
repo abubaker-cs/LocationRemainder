@@ -2,16 +2,22 @@ package com.udacity.project4.locationreminders.savereminder.selectreminderlocati
 
 
 import android.Manifest
+import android.content.pm.PackageManager
 import android.content.res.Resources
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.*
+import com.udacity.project4.Constants.TAG_LOGIN
 import com.udacity.project4.R
 import com.udacity.project4.base.BaseFragment
 import com.udacity.project4.databinding.FragmentSelectLocationBinding
@@ -28,7 +34,16 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     private lateinit var map: GoogleMap
 
+    // Default Location: Daewoo Express Thokar Niaz Baig, Lahore - Pakistan
+    private var selectedLocation: LatLng = LatLng(31.470095, 74.238973)
 
+    //
+    private var selectedLocationDescription: String? = null
+
+
+    /**
+     * Override: onCreateView()
+     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
@@ -53,6 +68,9 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         return binding.root
     }
 
+    /**
+     * onLocationSelected()
+     */
     private fun onLocationSelected() {
         //        TODO: When the user confirms on the selected location,
         //         send back the selected location details to the view model
@@ -60,10 +78,16 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     }
 
 
+    /**
+     * onCreateOptionsMenu()
+     */
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.map_options, menu)
     }
 
+    /**
+     * onOptionsItemSelected()
+     */
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         // TODO: Change the map type based on the user's selection.
         R.id.normal_map -> {
@@ -81,6 +105,9 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         else -> super.onOptionsItemSelected(item)
     }
 
+    /**
+     * onMapReady()
+     */
     override fun onMapReady(gMap: GoogleMap) {
         map = gMap
 
@@ -90,6 +117,9 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         enableMyLocation()
     }
 
+    /**
+     * setMapStyle()
+     */
     private fun setMapStyle(map: GoogleMap) {
         try {
             // Customize the styling of the base map using a JSON object defined
@@ -101,13 +131,16 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                 )
             )
             if (!success) {
-                Log.e(TAG, "Style parsing failed.")
+                Log.e(TAG_LOGIN, "Style parsing failed.")
             }
         } catch (e: Resources.NotFoundException) {
-            Log.e(TAG, "Can't find style. Error: ", e)
+            Log.e(TAG_LOGIN, "Can't find style. Error: ", e)
         }
     }
 
+    /**
+     * setMapLongClick()
+     */
     private fun setMapLongClick(map: GoogleMap) {
         map.setOnMapLongClickListener { latLng ->
             // A Snippet is Additional text that's displayed below the title.
@@ -131,6 +164,9 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         }
     }
 
+    /**
+     * setPoiClick()
+     */
     private fun setPoiClick(map: GoogleMap) {
         map.setOnPoiClickListener { poi ->
             val poiMarker = map.addMarker(
@@ -144,18 +180,59 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         }
     }
 
+    /**
+     * enableMyLocation()
+     */
     private fun enableMyLocation() {
         if (isPermissionGranted()) {
+
             map.isMyLocationEnabled = true
             Toast.makeText(context, "Location permission is granted.", Toast.LENGTH_SHORT).show()
+
         } else {
+
             requestPermissionLauncher.launch(
                 arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION
                 )
             )
+
         }
     }
+
+    /**
+     *
+     */
+    private fun isPermissionGranted(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    private val requestPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { permissions ->
+            when {
+                permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
+                    enableMyLocation()
+                }
+                permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
+                    enableMyLocation()
+                }
+
+                else -> {
+                    Log.i("Permission: ", "Denied")
+                    Toast.makeText(
+                        context,
+                        "Location permission was not granted.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+        }
 
 }
