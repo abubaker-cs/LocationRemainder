@@ -15,14 +15,14 @@ import com.udacity.project4.locationreminders.RemindersActivity
  */
 class AuthenticationActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityAuthenticationBinding
-    private val viewModel by viewModels<LoginViewModel>()
-
     companion object {
         const val TAG = "LoginFragment"
         const val SIGN_IN_RESULT_CODE = 1001
     }
 
+    // Get a reference to the ViewModel scoped to this Fragment
+    private val viewModel by viewModels<LoginViewModel>()
+    private lateinit var binding: ActivityAuthenticationBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,8 +30,12 @@ class AuthenticationActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        binding.login.setOnClickListener {
+        // Button:
+        binding.btnLogin.setOnClickListener {
+
+            // allowing users to register and sign in with their email address or Google account.
             launchSignInFlow()
+
         }
 
         // Implement the create account and sign in using FirebaseUI, use sign in using email and sign in using Google
@@ -42,7 +46,13 @@ class AuthenticationActivity : AppCompatActivity() {
         viewModel.authenticationState.observe(this) { authenticationState ->
             when (authenticationState) {
 
-                LoginViewModel.AuthenticationState.AUTHENTICATED -> switchActivities()
+                LoginViewModel.AuthenticationState.AUTHENTICATED -> {
+
+                    // If the user was authenticated, send him to RemindersActivity
+                    val switchActivityIntent = Intent(this, RemindersActivity::class.java)
+                    startActivity(switchActivityIntent)
+
+                }
 
                 else -> Log.e(
                     TAG,
@@ -69,12 +79,6 @@ class AuthenticationActivity : AppCompatActivity() {
                 providers
             ).build(), SIGN_IN_RESULT_CODE
         )
-    }
-
-    // If the user was authenticated, send him to RemindersActivity
-    private fun switchActivities() {
-        val switchActivityIntent = Intent(this, RemindersActivity::class.java)
-        startActivity(switchActivityIntent)
     }
 
 }
