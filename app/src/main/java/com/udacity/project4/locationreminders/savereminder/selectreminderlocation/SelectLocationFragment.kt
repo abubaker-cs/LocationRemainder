@@ -16,6 +16,7 @@ import androidx.databinding.DataBindingUtil
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.udacity.project4.Constants.TAG_LOGIN
 import com.udacity.project4.R
@@ -40,7 +41,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     //
     private var selectedLocationDescription: String? = null
 
-
     /**
      * Override: onCreateView()
      */
@@ -61,6 +61,9 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 //        TODO: add style to the map
 //        TODO: put a marker to location that the user selected
 
+        val mapFragment =
+            childFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment
+        mapFragment.getMapAsync(this)
 
 //        TODO: call this function after the user confirms on the selected location
         onLocationSelected()
@@ -75,6 +78,10 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         //        TODO: When the user confirms on the selected location,
         //         send back the selected location details to the view model
         //         and navigate back to the previous fragment to save the reminder and add the geofence
+
+        binding.saveReminderLocation.setOnClickListener {
+            _viewModel.onLocationSelected(selectedLocation, selectedLocationDescription)
+        }
     }
 
 
@@ -91,15 +98,19 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         // TODO: Change the map type based on the user's selection.
         R.id.normal_map -> {
+            map.mapType = GoogleMap.MAP_TYPE_NORMAL
             true
         }
         R.id.hybrid_map -> {
+            map.mapType = GoogleMap.MAP_TYPE_HYBRID
             true
         }
         R.id.satellite_map -> {
+            map.mapType = GoogleMap.MAP_TYPE_SATELLITE
             true
         }
         R.id.terrain_map -> {
+            map.mapType = GoogleMap.MAP_TYPE_TERRAIN
             true
         }
         else -> super.onOptionsItemSelected(item)
@@ -108,6 +119,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     /**
      * onMapReady()
      */
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onMapReady(gMap: GoogleMap) {
         map = gMap
 
@@ -183,10 +195,12 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     /**
      * enableMyLocation()
      */
+    @RequiresApi(Build.VERSION_CODES.N)
     private fun enableMyLocation() {
+
         if (isPermissionGranted()) {
 
-            map.isMyLocationEnabled = true
+            // map.isMyLocationEnabled = true
             Toast.makeText(context, "Location permission is granted.", Toast.LENGTH_SHORT).show()
 
         } else {
@@ -199,10 +213,27 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             )
 
         }
+
+
+//        if (isPermissionGranted()) {
+//
+//            map.isMyLocationEnabled = true
+//            Toast.makeText(context, "Location permission is granted.", Toast.LENGTH_SHORT).show()
+//
+//        } else {
+//
+//            requestPermissionLauncher.launch(
+//                arrayOf(
+//                    Manifest.permission.ACCESS_FINE_LOCATION,
+//                    Manifest.permission.ACCESS_COARSE_LOCATION
+//                )
+//            )
+//
+//        }
     }
 
     /**
-     *
+     * isPermissionGranted()
      */
     private fun isPermissionGranted(): Boolean {
         return ContextCompat.checkSelfPermission(
@@ -211,6 +242,9 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
+    /**
+     *
+     */
     @RequiresApi(Build.VERSION_CODES.N)
     private val requestPermissionLauncher =
         registerForActivityResult(
