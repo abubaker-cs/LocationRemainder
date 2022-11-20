@@ -23,6 +23,7 @@
         android:theme="@style/AppTheme"
         >
 
+        <!-- Activity: Reminder Description -->
         <activity android:name=".locationreminders.ReminderDescriptionActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
