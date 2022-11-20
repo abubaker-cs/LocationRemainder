@@ -46,8 +46,8 @@ class AuthenticationActivity : AppCompatActivity() {
                 LoginViewModel.AuthenticationState.AUTHENTICATED -> {
 
                     // If the user was authenticated, send him to RemindersActivity
-                    val switchActivityIntent = Intent(this, RemindersActivity::class.java)
-                    startActivity(switchActivityIntent)
+                    val intent = Intent(this, RemindersActivity::class.java)
+                    startActivity(intent)
 
                 }
 
