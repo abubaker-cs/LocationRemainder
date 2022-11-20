@@ -62,8 +62,12 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 //        TODO: put a marker to location that the user selected
 
         val mapFragment =
-            childFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment
+            childFragmentManager.findFragmentById(R.id.select_location_map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        binding.saveRemainderLocationButton.setOnClickListener {
+            _viewModel.onLocationSelected(selectedLocation, selectedLocationDescription)
+        }
 
 //        TODO: call this function after the user confirms on the selected location
         onLocationSelected()
@@ -79,9 +83,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         //         send back the selected location details to the view model
         //         and navigate back to the previous fragment to save the reminder and add the geofence
 
-        binding.saveReminderLocation.setOnClickListener {
-            _viewModel.onLocationSelected(selectedLocation, selectedLocationDescription)
-        }
+
     }
 
 
@@ -214,22 +216,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
         }
 
-
-//        if (isPermissionGranted()) {
-//
-//            map.isMyLocationEnabled = true
-//            Toast.makeText(context, "Location permission is granted.", Toast.LENGTH_SHORT).show()
-//
-//        } else {
-//
-//            requestPermissionLauncher.launch(
-//                arrayOf(
-//                    Manifest.permission.ACCESS_FINE_LOCATION,
-//                    Manifest.permission.ACCESS_COARSE_LOCATION
-//                )
-//            )
-//
-//        }
     }
 
     /**
