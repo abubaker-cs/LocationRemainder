@@ -1,6 +1,7 @@
 package com.udacity.project4.locationreminders
 
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.NavHostFragment
@@ -40,6 +41,18 @@ class RemindersActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)
 
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        when (item.itemId) {
+            android.R.id.home -> {
+                (R.id.nav_host_fragment as NavHostFragment).navController.popBackStack()
+                return true
+            }
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 
 }
