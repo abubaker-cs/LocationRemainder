@@ -86,7 +86,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     }
 
-
     /**
      * onCreateOptionsMenu()
      */
