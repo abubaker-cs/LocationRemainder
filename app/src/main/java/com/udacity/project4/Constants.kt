@@ -20,4 +20,7 @@ object Constants {
     const val BACKGROUND_LOCATION_PERMISSION_INDEX = 1
     const val REQUEST_TURN_DEVICE_LOCATION_ON = 29
 
+    // Geofence
+    const val ACTION_GEOFENCE_EVENT =
+        "GeofenceBroadcastReceiver.project4.action.ACTION_GEOFENCE_EVENT"
 }
