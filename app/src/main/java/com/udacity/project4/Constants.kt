@@ -5,6 +5,9 @@ package com.udacity.project4
  */
 object Constants {
 
+    // API Key
+    const val API_KEY = BuildConfig.MAPS_API_KEY
+
     const val TAG_LOGIN = "LoginFragment"
     const val SIGN_IN_RESULT_CODE = 1001
 

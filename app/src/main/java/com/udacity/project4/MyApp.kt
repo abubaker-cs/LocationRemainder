@@ -13,9 +13,8 @@ import org.koin.dsl.module
 
 class MyApp : Application() {
 
-    val apiKey = BuildConfig.MAPS_API_KEY
-
     override fun onCreate() {
+
         super.onCreate()
 
         /**
@@ -41,9 +40,13 @@ class MyApp : Application() {
             single { LocalDB.createRemindersDao(this@MyApp) }
         }
 
+        /**
+         * startKoin is a function that starts the Koin library
+         */
         startKoin {
             androidContext(this@MyApp)
             modules(listOf(myModule))
         }
+
     }
 }
