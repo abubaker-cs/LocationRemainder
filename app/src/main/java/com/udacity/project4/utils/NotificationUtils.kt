@@ -31,12 +31,15 @@ fun sendNotification(context: Context, reminderDataItem: ReminderDataItem) {
         notificationManager.createNotificationChannel(channel)
     }
 
+    // intent to open ReminderDescriptionActivity when the user clicks on the notification
     val intent = ReminderDescriptionActivity.newIntent(context.applicationContext, reminderDataItem)
 
     //create a pending intent that opens ReminderDescriptionActivity when the user clicks on the notification
     val stackBuilder = TaskStackBuilder.create(context)
         .addParentStack(ReminderDescriptionActivity::class.java)
         .addNextIntent(intent)
+
+    // notificationPendingIntent
     val notificationPendingIntent = stackBuilder
         .getPendingIntent(getUniqueId(), PendingIntent.FLAG_UPDATE_CURRENT)
 

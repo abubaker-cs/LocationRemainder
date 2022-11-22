@@ -39,7 +39,12 @@ android {
         enabledForTests = true
     }
 
+    viewBinding {
+        enabled = true
+    }
+
     buildFeatures {
+        viewBinding true
         dataBinding true
     }
 

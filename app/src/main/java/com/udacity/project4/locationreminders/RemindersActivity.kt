@@ -23,6 +23,7 @@ class RemindersActivity : AppCompatActivity() {
 
         // Inflate Layout: @layout/activity_reminders.xml
         binding = DataBindingUtil.setContentView(this, R.layout.activity_reminders)
+        // binding = ActivityRemindersBinding.inflate(layoutInflater)
 
         //
         binding.lifecycleOwner = this
@@ -47,7 +48,7 @@ class RemindersActivity : AppCompatActivity() {
 
         when (item.itemId) {
             android.R.id.home -> {
-                (R.id.nav_host_fragment as NavHostFragment).navController.popBackStack()
+                (supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment).navController.popBackStack()
                 return true
             }
         }
