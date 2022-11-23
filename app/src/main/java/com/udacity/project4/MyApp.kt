@@ -7,6 +7,7 @@ import com.udacity.project4.locationreminders.data.local.RemindersLocalRepositor
 import com.udacity.project4.locationreminders.reminderslist.RemindersListViewModel
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
@@ -41,11 +42,20 @@ class MyApp : Application() {
         }
 
         /**
-         * startKoin is a function that starts the Koin library
+         * From your Application class you can use the startKoin function and inject the Android context with androidContext
+         * Reference: https://insert-koin.io/docs/reference/koin-android/start
          */
         startKoin {
+
+            // use Android logger - Level.INFO by default
+            androidLogger()
+
+            // Inject | Reference Android context
             androidContext(this@MyApp)
+
+            // Load modules
             modules(listOf(myModule))
+
         }
 
     }
