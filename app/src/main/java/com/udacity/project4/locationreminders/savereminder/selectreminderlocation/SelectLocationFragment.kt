@@ -62,29 +62,23 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 //        TODO: add style to the map
 //        TODO: put a marker to location that the user selected
 
+        // SupportMapFragment is a fragment that displays a Google map
         val mapFragment =
             childFragmentManager.findFragmentById(R.id.select_location_map) as SupportMapFragment
+
+        // Get the map asynchronously
         mapFragment.getMapAsync(this)
 
+        // Call this function after the user confirms on the selected location
+        // Set the onClickListener for the save remainder location button
         binding.saveRemainderLocationButton.setOnClickListener {
+
+            // Set the selected location and description
             _viewModel.onLocationSelected(selectedLocation, selectedLocationDescription)
+
         }
 
-//        TODO: call this function after the user confirms on the selected location
-        onLocationSelected()
-
         return binding.root
-    }
-
-    /**
-     * onLocationSelected()
-     */
-    private fun onLocationSelected() {
-        //        TODO: When the user confirms on the selected location,
-        //         send back the selected location details to the view model
-        //         and navigate back to the previous fragment to save the reminder and add the geofence
-
-
     }
 
     /**
