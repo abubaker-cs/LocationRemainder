@@ -57,8 +57,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         setHasOptionsMenu(true)
         setDisplayHomeAsUpEnabled(true)
 
-//        TODO: put a marker to location that the user selected
-
         // SupportMapFragment is a fragment that displays a Google map
         val mapFragment =
             childFragmentManager.findFragmentById(R.id.select_location_map) as SupportMapFragment

@@ -9,7 +9,8 @@
     <string name="save">Save</string>
     <string name="reminder_saved">Reminder Saved !</string>
     <string name="logout">Logout</string>
-    <string name="welcome_to_the_location_reminder_app">Welcome to the location reminder app</string>
+    <string
+        name="welcome_to_the_location_reminder_app">Welcome to the location reminder app</string>
     <string name="login">Login</string>
     <string name="title_activity_maps">Map</string>
     <string name="normal_map">Normal Map</string>
@@ -35,9 +36,12 @@
     <string name="err_select_location">Please select location</string>
 
     <!-- Error strings -->
-    <string name="geofence_unknown_error">Unknown error: the Geofence service is not available now.</string>
+    <string
+        name="geofence_unknown_error">Unknown error: the Geofence service is not available now.</string>
     <string name="geofence_not_available">Geofence service is not available now. Go to Settings>Location>Mode and choose High accuracy.</string>
     <string name="geofence_too_many_geofences">Your app has registered too many geofences.</string>
     <string name="geofence_too_many_pending_intents">You have provided too many PendingIntents to the addGeofences() call.</string>
     <string name="error_adding_geofence">Error Happened, Can\'t Add Geofence</string>
+    <string name="save_reminder_error_desc">Please make sure you\'ve selected a location and added title and description before saving</string>
+    <string name="geofence_added">Geofence added successfully</string>
 </resources>
