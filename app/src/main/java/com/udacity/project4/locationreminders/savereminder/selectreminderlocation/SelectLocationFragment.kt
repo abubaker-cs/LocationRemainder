@@ -57,9 +57,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         setHasOptionsMenu(true)
         setDisplayHomeAsUpEnabled(true)
 
-//        TODO: add the map setup implementation
-//        TODO: zoom to the user location after taking his permission
-//        TODO: add style to the map
 //        TODO: put a marker to location that the user selected
 
         // SupportMapFragment is a fragment that displays a Google map
@@ -85,7 +82,10 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
      * onCreateOptionsMenu()
      */
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+
+        // Inflate the Map Options Menu, this adds items to the action bar if it is present.
         inflater.inflate(R.menu.map_options, menu)
+
     }
 
     /**
@@ -118,16 +118,29 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
      */
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onMapReady(gMap: GoogleMap) {
+
+        // Get the map
         map = gMap
 
+        //
         setMapStyle(map)
+
+        //
         setMapLongClick(map)
+
+        // --- zoom to the user location after taking his permission
         setPoiClick(map)
+
+        //
         enableMyLocation()
+
     }
 
     /**
      * setMapStyle()
+     * Set the custom map style
+     *
+     * DONE - Add style to the map
      */
     private fun setMapStyle(map: GoogleMap) {
         try {
@@ -202,6 +215,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
         } else {
 
+            // Permission to access the location is missing. Show rationale and request permission
             requestPermissionLauncher.launch(
                 arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
