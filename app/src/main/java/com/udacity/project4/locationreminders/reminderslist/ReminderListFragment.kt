@@ -20,36 +20,49 @@ class ReminderListFragment : BaseFragment() {
     //use Koin to retrieve the ViewModel instance
     override val _viewModel: RemindersListViewModel by viewModel()
 
+
+    // FragmentRemindersBinding is a generated class that contains all the views in the fragment_reminders.xml layout
     private lateinit var binding: FragmentRemindersBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
+        // Inflate the layout for this fragment
         binding =
             DataBindingUtil.inflate(
                 inflater,
                 R.layout.fragment_reminders, container, false
             )
 
+        // Set the view model for databinding - this allows the bound layout access to all the data in the ViewModel
         binding.viewModel = _viewModel
 
         setHasOptionsMenu(true)
+
         setDisplayHomeAsUpEnabled(false)
+
+        // Set the title bar
         setTitle(getString(R.string.app_name))
 
         binding.refreshLayout.setOnRefreshListener { _viewModel.loadReminders() }
 
+        // Return the root view
         return binding.root
+
     }
 
+    // This function is called after onCreateView and after the view is created
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
         super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = this
         setupRecyclerView()
         binding.addReminderFAB.setOnClickListener {
             navigateToAddReminder()
         }
+
     }
 
     override fun onResume() {
@@ -67,14 +80,20 @@ class ReminderListFragment : BaseFragment() {
         )
     }
 
+    // Set up the recycler view
     private fun setupRecyclerView() {
+
         val adapter = RemindersListAdapter {}
 
         // setup the recycler view using the extension function
         binding.remindersRecyclerView.setup(adapter)
+
     }
 
+    // Add the menu to the app bar
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        // If the user clicks the logout menu item, then log them out
         when (item.itemId) {
             R.id.logout -> {
                 AuthUI.getInstance().signOut(requireContext()).addOnCompleteListener {
@@ -83,14 +102,18 @@ class ReminderListFragment : BaseFragment() {
                 }
             }
         }
+
         return super.onOptionsItemSelected(item)
 
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+
         super.onCreateOptionsMenu(menu, inflater)
-//        display logout as menu item
+
+        // display logout as menu item
         inflater.inflate(R.menu.main_menu, menu)
+
     }
 
 }

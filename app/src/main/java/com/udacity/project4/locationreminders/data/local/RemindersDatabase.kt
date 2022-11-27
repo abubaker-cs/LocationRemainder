@@ -11,4 +11,5 @@ import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 abstract class RemindersDatabase : RoomDatabase() {
 
     abstract fun reminderDao(): RemindersDao
+
 }
