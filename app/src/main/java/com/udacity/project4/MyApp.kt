@@ -39,13 +39,11 @@ class MyApp : Application() {
                 )
             }
 
-            single {
-                RemindersLocalRepository(get())
-            }
+            // ReminderDataSource
+            // TODO: Declare the local data source as a single to be injected in the repository
+            single { RemindersLocalRepository(get()) }
 
-            single {
-                LocalDB.createRemindersDao(this@MyApp)
-            }
+            single { LocalDB.createRemindersDao(this@MyApp) }
 
         }
 
