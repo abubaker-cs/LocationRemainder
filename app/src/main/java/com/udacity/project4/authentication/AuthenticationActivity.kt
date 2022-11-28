@@ -41,23 +41,17 @@ class AuthenticationActivity : AppCompatActivity() {
         //https://github.com/firebase/FirebaseUI-Android/blob/master/auth/README.md#custom-layout
 
         viewModel.authenticationState.observe(this) { authenticationState ->
-            when (authenticationState) {
+            if (authenticationState == LoginViewModel.AuthenticationState.AUTHENTICATED) {
 
-                LoginViewModel.AuthenticationState.AUTHENTICATED -> {
+                // If the user was authenticated, send him to RemindersActivity
+                val intent = Intent(this, RemindersActivity::class.java)
+                startActivity(intent)
 
-                    // If the user was authenticated, send him to RemindersActivity
-                    val intent = Intent(this, RemindersActivity::class.java)
-                    startActivity(intent)
-
-                }
-
-                else -> Log.e(
-                    TAG_LOGIN,
-                    "Authentication state that doesn't require any UI change $authenticationState"
-                )
-            }
+            } else Log.e(
+                TAG_LOGIN,
+                "Authentication state that doesn't require any UI change $authenticationState"
+            )
         }
-
 
     }
 
