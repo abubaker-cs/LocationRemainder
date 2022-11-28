@@ -23,15 +23,29 @@ class MyApp : Application() {
         val myModule = module {
 
             //Declare a ViewModel - be later inject into Fragment with dedicated injector using by viewModel()
-            viewModel { RemindersListViewModel(get(), get() as ReminderDataSource) }
+            viewModel {
+                RemindersListViewModel(
+                    get(),
+                    get() as ReminderDataSource
+                )
+            }
 
             //Declare singleton definitions to be later injected using by inject()
             //This view model is declared singleton to be used across multiple fragments
-            single { SaveReminderViewModel(get(), get() as ReminderDataSource) }
+            viewModel {
+                SaveReminderViewModel(
+                    get(),
+                    get() as ReminderDataSource
+                )
+            }
 
             // ReminderDataSource
             // TODO: Declare the local data source as a single to be injected in the repository
-            single { RemindersLocalRepository(get()) }
+            // single { RemindersLocalRepository(get()) as ReminderDataSource }
+
+            // https://knowledge.udacity.com/questions/734982
+            single<ReminderDataSource> { RemindersLocalRepository(get()) }
+
 
             single { LocalDB.createRemindersDao(this@MyApp) }
 

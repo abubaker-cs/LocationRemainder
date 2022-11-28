@@ -31,6 +31,8 @@ class RemindersActivity : AppCompatActivity() {
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
 
+        navHostFragment.navController.setGraph(R.navigation.nav_graph, intent.extras)
+
         val navController = navHostFragment.navController
 
         /**

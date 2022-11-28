@@ -41,6 +41,9 @@ import org.koin.dsl.module
 // Extended Koin Test - embed autoclose @after method to close Koin after every test
 class RemindersActivityTest : AutoCloseKoinTest() {
 
+    // TODO: Replace AutoCloseKoinTest with KoinTest
+    // https://knowledge.udacity.com/questions/860706
+
     private lateinit var repository: ReminderDataSource
     private lateinit var appContext: Application
 
