@@ -180,10 +180,7 @@ class SaveReminderFragment : BaseFragment() {
 //             1) add a geofencing request
 //             2) save the reminder to the local db
 
-
-            if (
-                title == null || description == null || latitude == null || longitude == null
-            ) {
+            if (title == null || description == null || latitude == null || longitude == null) {
                 Snackbar.make(
                     binding.root,
                     getString(R.string.save_reminder_error_desc),
