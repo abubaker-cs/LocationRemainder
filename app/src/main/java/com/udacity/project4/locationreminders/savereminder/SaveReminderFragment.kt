@@ -170,63 +170,41 @@ class SaveReminderFragment : BaseFragment() {
         registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
+
+            // Check if the user has granted the permissions
             when {
+
+                // ACCESS_FINE_LOCATION ?
                 permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
+
                     checkPermissionsAndStartGeofencing()
+
                 }
+
+                // ACCESS_COARSE_LOCATION ?
                 permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
                     checkPermissionsAndStartGeofencing()
                 }
+
+                // ACCESS_BACKGROUND_LOCATION ?
                 permissions.getOrDefault(Manifest.permission.ACCESS_BACKGROUND_LOCATION, false) -> {
                     checkPermissionsAndStartGeofencing()
                 }
+
                 else -> {
+
                     Log.i("Permission: ", "Denied")
+
+                    // Show a Toast message: "Location permission was not granted."
                     Toast.makeText(
                         context,
                         "Location permission was not granted.",
                         Toast.LENGTH_LONG
                     ).show()
+
                 }
             }
         }
-
-    /**
-     * override 06 - onRequestPermissionsResult()
-     */
-    @Deprecated("Deprecated in Java")
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        Log.d(TAG_LOGIN, "onRequestPermissionResult")
-
-        if (
-            grantResults.isEmpty() ||
-            grantResults[LOCATION_PERMISSION_INDEX] == PackageManager.PERMISSION_DENIED ||
-            (requestCode == REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE &&
-                    grantResults[BACKGROUND_LOCATION_PERMISSION_INDEX] ==
-                    PackageManager.PERMISSION_DENIED)
-        ) {
-            Snackbar.make(
-                binding.root,
-                R.string.permission_denied_explanation,
-                Snackbar.LENGTH_INDEFINITE
-            )
-                .setAction(R.string.settings) {
-                    startActivity(Intent().apply {
-                        action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                        data = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)
-                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    })
-                }.show()
-        } else {
-            checkDeviceLocationSettingsAndStartGeofence(true)
-        }
-    }
-
 
     /**
      * 01 checkPermissionsAndStartGeofencing()
@@ -254,53 +232,39 @@ class SaveReminderFragment : BaseFragment() {
     }
 
     /**
-     * 02 foregroundAndBackgroundLocationPermissionApproved
-     */
-    private fun foregroundAndBackgroundLocationPermissionApproved(): Boolean {
-        val foregroundLocationApproved = (
-                PackageManager.PERMISSION_GRANTED ==
-                        ActivityCompat.checkSelfPermission(
-                            contxt,
-                            Manifest.permission.ACCESS_FINE_LOCATION
-                        ))
-        val backgroundPermissionApproved =
-            if (runningQOrLater) {
-                PackageManager.PERMISSION_GRANTED ==
-                        ActivityCompat.checkSelfPermission(
-                            this.contxt, Manifest.permission.ACCESS_BACKGROUND_LOCATION
-                        )
-            } else {
-                true
-            }
-        return foregroundLocationApproved && backgroundPermissionApproved
-    }
-
-    //
-    @Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == REQUEST_TURN_DEVICE_LOCATION_ON) {
-            checkDeviceLocationSettingsAndStartGeofence(false)
-        }
-
-    }
-
-    /**
      * 03 checkDeviceLocationSettingsAndStartGeofence()
      */
     private fun checkDeviceLocationSettingsAndStartGeofence(resolve: Boolean = true) {
-        val locationSettingsResponseTask =
-            checkDeviceLocationSettings(resolve)
+
+        // Create a LocationRequest object
+        val locationSettingsResponseTask = checkDeviceLocationSettings(resolve)
+
+        // Check if the device's location settings are enabled
         locationSettingsResponseTask?.addOnCompleteListener {
+
             if (it.isSuccessful) {
+
+                // Add the geofence
                 addGeofence()
-                val reminderDataItem =
-                    ReminderDataItem(title, description, location, latitude, longitude, id = id)
+
+                // Prepare the items to be stored in the database
+                val reminderDataItem = ReminderDataItem(
+                    title,
+                    description,
+                    location,
+                    latitude,
+                    longitude,
+                    id = id
+                )
+
+                // Save the reminder to the local database
                 _viewModel.saveReminder(reminderDataItem)
+
             }
+
         }
     }
+
 
     /**
      * 04 checkDeviceLocationSettings()
@@ -341,23 +305,118 @@ class SaveReminderFragment : BaseFragment() {
         return locationSettingsResponseTask
     }
 
+
+    /**
+     * override 06 - onRequestPermissionsResult()
+     */
+    @Deprecated("Deprecated in Java")
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        Log.d(TAG_LOGIN, "onRequestPermissionResult")
+
+        if (
+            grantResults.isEmpty() ||
+            grantResults[LOCATION_PERMISSION_INDEX] == PackageManager.PERMISSION_DENIED ||
+            (requestCode == REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE &&
+                    grantResults[BACKGROUND_LOCATION_PERMISSION_INDEX] ==
+                    PackageManager.PERMISSION_DENIED)
+        ) {
+            Snackbar.make(
+                binding.root,
+                R.string.permission_denied_explanation,
+                Snackbar.LENGTH_INDEFINITE
+            )
+                .setAction(R.string.settings) {
+                    startActivity(Intent().apply {
+                        action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                        data = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    })
+                }.show()
+        } else {
+            checkDeviceLocationSettingsAndStartGeofence(true)
+        }
+    }
+
+
+    /**
+     * 02 foregroundAndBackgroundLocationPermissionApproved
+     */
+    private fun foregroundAndBackgroundLocationPermissionApproved(): Boolean {
+        val foregroundLocationApproved = (
+                PackageManager.PERMISSION_GRANTED ==
+                        ActivityCompat.checkSelfPermission(
+                            contxt,
+                            Manifest.permission.ACCESS_FINE_LOCATION
+                        ))
+        val backgroundPermissionApproved =
+            if (runningQOrLater) {
+                PackageManager.PERMISSION_GRANTED ==
+                        ActivityCompat.checkSelfPermission(
+                            this.contxt, Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                        )
+            } else {
+                true
+            }
+        return foregroundLocationApproved && backgroundPermissionApproved
+    }
+
+    //
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == REQUEST_TURN_DEVICE_LOCATION_ON) {
+            checkDeviceLocationSettingsAndStartGeofence(false)
+        }
+
+    }
+
+
     /**
      * 05 addGeofence()
      */
     @SuppressLint("MissingPermission")
     private fun addGeofence() {
+
+        // Create a Geofence object
         val geofence = latitude?.let {
-            longitude?.let { it1 ->
+
+            longitude?.let { longitudinalAxis ->
                 Geofence.Builder()
-                    .setCircularRegion(it, it1, radius)
+
+                    // Sets the request ID of the geofence.
                     .setRequestId(id)
+
+                    // Sets the region of this geofence based on:
+                    // 1. Latitude: it
+                    // 2. Longitude: longitudinalAxis
+                    // 3. Radius: radius
+                    .setCircularRegion(it, longitudinalAxis, radius)
+
+                    // Sets the transition types of interest.
                     .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
+
+                    // Sets the expiration duration of geofence.
+                    // This geofence will be removed automatically after this period of time.
                     .setExpirationDuration(Geofence.NEVER_EXPIRE)
+
+                    // Sets the delay between Geofence.GEOFENCE_TRANSITION_ENTER and
+                    // Geofence.GEOFENCE_TRANSITION_DWELL in milliseconds.
                     .setLoiteringDelay(1000)
+
+                    // Creates a geofence object.
                     .build()
+
             }
+
         }
 
+        // Create a GeofencingRequest object
         val geofenceRequest = geofence?.let {
             GeofencingRequest.Builder()
                 .addGeofence(it)
@@ -365,7 +424,10 @@ class SaveReminderFragment : BaseFragment() {
                 .build()
         }
 
+        // Depending on the Success or Failure: Display Toast messages
         geofencingClient.addGeofences(geofenceRequest!!, geofencePendingIntent).run {
+
+            // Success: Geofence added successfully
             addOnSuccessListener {
                 Toast.makeText(
                     contxt,
@@ -373,6 +435,8 @@ class SaveReminderFragment : BaseFragment() {
                     Toast.LENGTH_LONG
                 ).show()
             }
+
+            // Failure: An exception occurred *****
             addOnFailureListener {
                 Toast.makeText(
                     contxt,
@@ -380,7 +444,9 @@ class SaveReminderFragment : BaseFragment() {
                     Toast.LENGTH_LONG
                 ).show()
             }
+
         }
+
     }
 
 
