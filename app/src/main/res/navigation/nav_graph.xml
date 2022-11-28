@@ -21,10 +21,12 @@
         android:label="ReminderListFragment"
         tools:layout="@layout/fragment_reminders"
         >
+
         <action
             android:id="@+id/to_save_reminder"
             app:destination="@id/saveReminderFragment"
             />
+
     </fragment>
 
     <!-- Fragment: Save Reminder -->
@@ -34,14 +36,19 @@
         android:label="Add Reminder"
         tools:layout="@layout/fragment_save_reminder"
         >
+
+        <!-- To: Reminder List -->
         <action
             android:id="@+id/action_saveReminderFragment_to_reminderListFragment"
             app:destination="@id/reminderListFragment"
             />
+
+        <!-- To: Select Location -->
         <action
             android:id="@+id/action_saveReminderFragment_to_selectLocationFragment"
             app:destination="@id/selectLocationFragment"
             />
+
     </fragment>
 
     <!-- Fragment: Select Location -->

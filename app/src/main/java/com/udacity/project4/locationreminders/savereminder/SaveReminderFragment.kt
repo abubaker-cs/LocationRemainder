@@ -64,15 +64,104 @@ class SaveReminderFragment : BaseFragment() {
 
     // val 01 - geofencePendingIntent
     private val geofencePendingIntent: PendingIntent by lazy {
+
+        // Intent to start the GeofenceBroadcastReceiver
         val intent = Intent(this.contxt as Activity, GeofenceBroadcastReceiver::class.java)
+
+        // Assign the action to the intent
         intent.action = ACTION_GEOFENCE_EVENT
+
+        // getBroadcast(context, requestCode, intent, flags)
         PendingIntent.getBroadcast(
             this.contxt,
             0,
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
         )
+
     }
+
+
+    /**
+     * override - onCreateView()
+     */
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding =
+            DataBindingUtil.inflate(inflater, R.layout.fragment_save_reminder, container, false)
+
+        setDisplayHomeAsUpEnabled(true)
+
+        binding.viewModel = _viewModel
+
+        //
+        geofencingClient = LocationServices.getGeofencingClient(this.contxt as Activity)
+
+        return binding.root
+    }
+
+    /**
+     * override - onViewCreated()
+     */
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+
+        binding.lifecycleOwner = this
+
+        // FAB: Select Location
+        binding.selectLocation.setOnClickListener {
+
+            // Navigate to: SelectLocationFragment
+            _viewModel.navigationCommand.value =
+                NavigationCommand.To(SaveReminderFragmentDirections.actionSaveReminderFragmentToSelectLocationFragment())
+
+        }
+
+
+        // Button: Save Reminder
+        binding.saveReminder.setOnClickListener {
+
+            // Title
+            val title = _viewModel.reminderTitle.value
+
+            // Description
+            val description = _viewModel.reminderDescription.value
+
+            // Location
+            val location = _viewModel.reminderSelectedLocationStr.value
+
+            // Latitude: X-Axis
+            val latitude = _viewModel.latitude.value
+
+            // Longitude: Y-Axis
+            val longitude = _viewModel.longitude.value
+
+            id = UUID.randomUUID().toString()
+
+            // Check if the user has entered all the required fields
+            if (title == null || description == null || latitude == null || longitude == null) {
+
+                // Show a Toast message: "Please enter all the required fields"
+                Snackbar.make(
+                    binding.root,
+                    getString(R.string.save_reminder_error_desc),
+                    Snackbar.LENGTH_SHORT
+                ).show()
+
+            } else {
+
+                // Create a ReminderDataItem object
+                checkPermissionsAndStartGeofencing()
+
+            }
+
+        }
+
+    }
+
 
     /**
      * val 02 - requestPermissionLauncher
@@ -138,71 +227,21 @@ class SaveReminderFragment : BaseFragment() {
         }
     }
 
-    /**
-     * override - onCreateView()
-     */
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_save_reminder, container, false)
-
-        setDisplayHomeAsUpEnabled(true)
-
-        binding.viewModel = _viewModel
-
-        //
-        geofencingClient = LocationServices.getGeofencingClient(this.contxt as Activity)
-
-        return binding.root
-    }
-
-    /**
-     * override - onViewCreated()
-     */
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        binding.lifecycleOwner = this
-        binding.selectLocation.setOnClickListener {
-            //            Navigate to another fragment to get the user location
-            _viewModel.navigationCommand.value =
-                NavigationCommand.To(SaveReminderFragmentDirections.actionSaveReminderFragmentToSelectLocationFragment())
-        }
-
-        binding.saveReminder.setOnClickListener {
-            val title = _viewModel.reminderTitle.value
-            val description = _viewModel.reminderDescription
-            val location = _viewModel.reminderSelectedLocationStr.value
-            val latitude = _viewModel.latitude
-            val longitude = _viewModel.longitude.value
-            id = UUID.randomUUID().toString()
-
-//            TODO: use the user entered reminder details to:
-//             1) add a geofencing request
-//             2) save the reminder to the local db
-
-            if (title == null || description == null || latitude == null || longitude == null) {
-                Snackbar.make(
-                    binding.root,
-                    getString(R.string.save_reminder_error_desc),
-                    Snackbar.LENGTH_SHORT
-                )
-                    .show()
-            } else {
-                checkPermissionsAndStartGeofencing()
-            }
-
-        }
-    }
 
     /**
      * 01 checkPermissionsAndStartGeofencing()
      */
     private fun checkPermissionsAndStartGeofencing() {
+
+        // Check if the user has granted the ACCESS_FINE_LOCATION permission
         if (foregroundAndBackgroundLocationPermissionApproved()) {
+
+            // Check if the device's location settings are enabled
             checkDeviceLocationSettingsAndStartGeofence()
+
         } else {
+
+            // Request for following permissions:
             requestPermissionLauncher.launch(
                 arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
@@ -210,6 +249,7 @@ class SaveReminderFragment : BaseFragment() {
                     Manifest.permission.ACCESS_COARSE_LOCATION
                 )
             )
+
         }
     }
 
