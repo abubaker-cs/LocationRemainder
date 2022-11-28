@@ -34,14 +34,12 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
-import org.koin.test.AutoCloseKoinTest
-import org.koin.test.get
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
-//END TO END test to black box test the app
-class RemindersActivityTest :
-    AutoCloseKoinTest() {// Extended Koin Test - embed autoclose @after method to close Koin after every test
+// END TO END test to black box test the app
+// Extended Koin Test - embed autoclose @after method to close Koin after every test
+class RemindersActivityTest : AutoCloseKoinTest() {
 
     private lateinit var repository: ReminderDataSource
     private lateinit var appContext: Application
@@ -108,10 +106,10 @@ class RemindersActivityTest :
         dataBindingIdlingResource.monitorActivity(activityScenario)
 
         // click on the FAB add reminder
-        Espresso.onView(ViewMatchers.withId(R.id.addReminderFAB)).perform(ViewActions.click())
+        onView(ViewMatchers.withId(R.id.addReminderFAB)).perform(ViewActions.click())
 
         // check that we are on the SaveReminder screen
-        Espresso.onView(ViewMatchers.withId(R.id.reminderTitle))
+        onView(ViewMatchers.withId(R.id.reminderTitle))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
 
         // Make sure the activity is closed before resetting the db:
@@ -124,23 +122,23 @@ class RemindersActivityTest :
         val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
 
-        Espresso.onView(ViewMatchers.withId(R.id.addReminderFAB)).perform(ViewActions.click())
-        Espresso.onView(ViewMatchers.withId(R.id.reminderTitle))
+        onView(ViewMatchers.withId(R.id.addReminderFAB)).perform(ViewActions.click())
+        onView(ViewMatchers.withId(R.id.reminderTitle))
             .perform(ViewActions.replaceText("Test Title"))
-        Espresso.onView(ViewMatchers.withId(R.id.reminderDescription))
+        onView(ViewMatchers.withId(R.id.reminderDescription))
             .perform(ViewActions.replaceText("Test Description"))
 
         Thread.sleep(1000)
 
-        Espresso.onView(ViewMatchers.withId(R.id.selectLocation)).perform(ViewActions.click())
-        Espresso.onView(withId(R.id.select_location_map)).perform(ViewActions.click())
+        onView(ViewMatchers.withId(R.id.selectLocation)).perform(ViewActions.click())
+        onView(withId(R.id.select_location_map)).perform(ViewActions.click())
 
         Thread.sleep(3000)
 
-        Espresso.onView(withId(R.id.save_remainder_location_button)).perform(ViewActions.click())
-        Espresso.onView(ViewMatchers.withId(R.id.saveReminder)).perform(ViewActions.click())
+        onView(withId(R.id.save_remainder_location_button)).perform(ViewActions.click())
+        onView(ViewMatchers.withId(R.id.saveReminder)).perform(ViewActions.click())
 
-        Espresso.onView(ViewMatchers.withText(R.string.reminder_saved)).inRoot(
+        onView(ViewMatchers.withText(R.string.reminder_saved)).inRoot(
             RootMatchers.withDecorView(
                 CoreMatchers.not(
                     Is.`is`(
@@ -167,18 +165,18 @@ class RemindersActivityTest :
         val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
 
-        Espresso.onView(ViewMatchers.withId(R.id.addReminderFAB)).perform(ViewActions.click())
-        Espresso.onView(ViewMatchers.withId(R.id.reminderDescription))
+        onView(ViewMatchers.withId(R.id.addReminderFAB)).perform(ViewActions.click())
+        onView(ViewMatchers.withId(R.id.reminderDescription))
             .perform(ViewActions.replaceText("Test Description"))
 
         Thread.sleep(1000)
 
-        Espresso.onView(ViewMatchers.withId(R.id.selectLocation)).perform(ViewActions.click())
-        Espresso.onView(withId(R.id.select_location_map)).perform(ViewActions.click())
+        onView(ViewMatchers.withId(R.id.selectLocation)).perform(ViewActions.click())
+        onView(withId(R.id.select_location_map)).perform(ViewActions.click())
 
         Thread.sleep(3000)
 
-        Espresso.onView(
+        onView(
             withId(R.id.save_remainder_location_button).perform(ViewActions.click())
 
                     Espresso . onView (ViewMatchers.withId(R.id.saveReminder)).perform(ViewActions.click())

@@ -10,8 +10,7 @@ class LoginViewModel : ViewModel() {
      */
     enum class AuthenticationState {
         AUTHENTICATED,
-        UNAUTHENTICATED,
-        INVALID_AUTHENTICATION
+        UNAUTHENTICATED
     }
 
     // TO DO Create an authenticationState variable based off the FirebaseUserLiveData object. By
