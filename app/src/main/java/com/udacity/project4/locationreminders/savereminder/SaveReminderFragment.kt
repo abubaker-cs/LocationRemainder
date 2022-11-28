@@ -50,15 +50,17 @@ class SaveReminderFragment : BaseFragment() {
 
     private val runningQOrLater = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
     private lateinit var geofencingClient: GeofencingClient
+
     private var title: String? = null
     private var description: String? = null
     private var latitude: Double? = null
     private var longitude: Double? = null
     private var radius = 500f
     private var location: String? = null
+
+
     private lateinit var id: String
     private lateinit var contxt: Context
-
 
     // val 01 - geofencePendingIntent
     private val geofencePendingIntent: PendingIntent by lazy {
