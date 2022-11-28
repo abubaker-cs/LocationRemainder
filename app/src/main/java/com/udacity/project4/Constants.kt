@@ -23,4 +23,7 @@ object Constants {
     // Geofence
     const val ACTION_GEOFENCE_EVENT =
         "GeofenceBroadcastReceiver.project4.action.ACTION_GEOFENCE_EVENT"
+
+    // To be used in SaveReimbursementFragment
+    const val GEOFENCE_RADIUS_IN_METERS = 500f
 }

@@ -28,6 +28,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.udacity.project4.BuildConfig
 import com.udacity.project4.Constants.ACTION_GEOFENCE_EVENT
 import com.udacity.project4.Constants.BACKGROUND_LOCATION_PERMISSION_INDEX
+import com.udacity.project4.Constants.GEOFENCE_RADIUS_IN_METERS
 import com.udacity.project4.Constants.LOCATION_PERMISSION_INDEX
 import com.udacity.project4.Constants.REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE
 import com.udacity.project4.Constants.REQUEST_TURN_DEVICE_LOCATION_ON
@@ -55,7 +56,6 @@ class SaveReminderFragment : BaseFragment() {
     private var description: String? = null
     private var latitude: Double? = null
     private var longitude: Double? = null
-    private var radius = 500f
     private var location: String? = null
 
 
@@ -92,11 +92,11 @@ class SaveReminderFragment : BaseFragment() {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_save_reminder, container, false)
 
+        // Set whether home should be displayed as an "up" affordance.
         setDisplayHomeAsUpEnabled(true)
 
         binding.viewModel = _viewModel
 
-        //
         geofencingClient = LocationServices.getGeofencingClient(this.contxt as Activity)
 
         return binding.root
@@ -161,7 +161,6 @@ class SaveReminderFragment : BaseFragment() {
         }
 
     }
-
 
     /**
      * val 02 - requestPermissionLauncher
@@ -294,6 +293,8 @@ class SaveReminderFragment : BaseFragment() {
                     )
                 }
             } else {
+
+                //
                 Snackbar.make(
                     binding.root,
                     R.string.location_required_error, Snackbar.LENGTH_INDEFINITE
@@ -368,10 +369,15 @@ class SaveReminderFragment : BaseFragment() {
     //
     @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+
         super.onActivityResult(requestCode, resultCode, data)
 
+        // Check if the user has granted the ACCESS_FINE_LOCATION permission
         if (requestCode == REQUEST_TURN_DEVICE_LOCATION_ON) {
+
+            //
             checkDeviceLocationSettingsAndStartGeofence(false)
+
         }
 
     }
@@ -396,7 +402,7 @@ class SaveReminderFragment : BaseFragment() {
                     // 1. Latitude: it
                     // 2. Longitude: longitudinalAxis
                     // 3. Radius: radius
-                    .setCircularRegion(it, longitudinalAxis, radius)
+                    .setCircularRegion(it, longitudinalAxis, GEOFENCE_RADIUS_IN_METERS)
 
                     // Sets the transition types of interest.
                     .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
@@ -418,9 +424,17 @@ class SaveReminderFragment : BaseFragment() {
 
         // Create a GeofencingRequest object
         val geofenceRequest = geofence?.let {
+
+            // Create a GeofencingRequest object
             GeofencingRequest.Builder()
+
+                // Sets whether to monitor the entry to the geofence.
                 .addGeofence(it)
+
+                // Sets whether to monitor the exit from the geofence.
                 .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
+
+                // Creates a GeofencingRequest object.
                 .build()
         }
 
@@ -454,44 +468,28 @@ class SaveReminderFragment : BaseFragment() {
      * override - onDestroy()
      */
     override fun onDestroy() {
+
+        // Called when the fragment is no longer in use.
+        // This is called after onStop() and before onDetach().
         super.onDestroy()
+
         //make sure to clear the view model after destroy, as it's a single view model.
         _viewModel.onClear()
+
     }
 
     /**
      * override - onAttach()
      */
     override fun onAttach(context: Context) {
+
+        // Called when a fragment is first attached to its context.
+        // onCreate(Bundle) will be called after this.
         super.onAttach(context)
+
+        // Get the context
         contxt = context
+
     }
 
 }
-
-/**
- * val
- * =============================
- * 01 geofencePendingIntent
- * 02 requestPermissionLauncher
- *
- *
- * override
- * =============================
- * 01 onCreateView
- * 02 onViewCreated
- * 03 onActivityResult
- * 04 onDestroy
- * 05 onAttach
- * 06 onRequestPermissionsResult
- *
- *
- * fun
- * =============================
- * 01 checkPermissionsAndStartGeofencing
- * 02 foregroundAndBackgroundLocationPermissionApproved
- * 03 checkDeviceLocationSettingsAndStartGeofence
- * 04 checkDeviceLocationSettings
- * 05 addGeofence
- *
- */
