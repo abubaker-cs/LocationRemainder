@@ -150,6 +150,9 @@ class SaveReminderFragment : BaseFragment() {
 
         binding.viewModel = _viewModel
 
+        //
+        geofencingClient = LocationServices.getGeofencingClient(this.contxt as Activity)
+
         return binding.root
     }
 
