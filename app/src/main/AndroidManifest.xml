@@ -5,12 +5,21 @@
          Google Maps Android API v2, but you must specify either coarse or fine
          location permissions for the 'MyLocation' functionality.
     -->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+
+    <!-- Approximate location (Always include this permission) -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
-    <!-- The BACKGROUND_LOCATION permission is required for geofencing functionality to work on Q+ -->
+    <!-- Precise location (Include only if your app benefits from it). -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <!-- Required only when requesting background location access on Android 10 (API level 29) and higher. -->
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
+    <!-- It allows applications to open network sockets, it is also required for the Google Maps API to work -->
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Allows using PowerManager WakeLocks to keep processor from sleeping or screen from dimming. -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application

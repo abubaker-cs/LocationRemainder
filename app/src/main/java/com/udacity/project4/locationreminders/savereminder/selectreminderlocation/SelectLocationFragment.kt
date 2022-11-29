@@ -244,9 +244,13 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
             when {
+
+                // Permission: ACCESS_FINE_LOCATION
                 permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
                     enableMyLocation()
                 }
+
+                // Permission: ACCESS_COARSE_LOCATION
                 permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
                     enableMyLocation()
                 }
