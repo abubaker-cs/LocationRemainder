@@ -121,13 +121,8 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         // Get the map
         map = googleMap
 
-        //These coordinates represent the latitude and longitude of the Googleplex.
-        val latitude = 37.422160
-        val longitude = -122.084270
-        val zoomLevel = 15f
-        val homeLatLng = LatLng(latitude, longitude)
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLatLng, zoomLevel))
-        map.addMarker(MarkerOptions().position(homeLatLng))
+        // Zoom the current device location
+        zoomToCurrentDeviceLocation()
 
         // Set the custom map style using the JSON style file
         setCustomMapStyleUsingJSONFile(map)
@@ -140,6 +135,24 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
         // Verify or request location permissions
         verifyOrRequestLocationPermissions()
+
+    }
+
+    /**
+     * zoomToCurrentDeviceLocation()
+     */
+    private fun zoomToCurrentDeviceLocation() {
+
+        // TODO: Get the current Device Location and ZOOM to proper Level
+        // reference: https://developers.google.com/maps/documentation/android-sdk/current-place-tutorial#get-the-current-place
+
+        //These coordinates represent the latitude and longitude of the Googleplex.
+        val latitude = 31.470095
+        val longitude = 74.238973
+        val zoomLevel = 15f
+        val homeLatLng = LatLng(latitude, longitude)
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLatLng, zoomLevel))
+        map.addMarker(MarkerOptions().position(homeLatLng))
 
     }
 
