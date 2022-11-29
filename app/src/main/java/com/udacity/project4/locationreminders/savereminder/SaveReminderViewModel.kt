@@ -15,12 +15,15 @@ import kotlinx.coroutines.launch
 
 class SaveReminderViewModel(val app: Application, private val dataSource: ReminderDataSource) :
     BaseViewModel(app) {
+
+
     val reminderTitle = MutableLiveData<String?>()
     val reminderDescription = MutableLiveData<String?>()
     val reminderSelectedLocationStr = MutableLiveData<String?>()
     private val selectedPOI = MutableLiveData<PointOfInterest?>()
     val latitude = MutableLiveData<Double?>()
     val longitude = MutableLiveData<Double?>()
+
 
     /**
      * Clear the live data objects to start fresh next time the view model gets called
@@ -38,9 +41,11 @@ class SaveReminderViewModel(val app: Application, private val dataSource: Remind
      * Validate the entered data then saves the reminder data to the DataSource
      */
     fun validateAndSaveReminder(reminderData: ReminderDataItem) {
+
         if (validateEnteredData(reminderData)) {
             saveReminder(reminderData)
         }
+
     }
 
     /**
@@ -57,8 +62,12 @@ class SaveReminderViewModel(val app: Application, private val dataSource: Remind
      * Save the reminder to the data source
      */
     fun saveReminder(reminderData: ReminderDataItem) {
+
         showLoading.value = true
+
+        // Use coroutines to save the reminder and navigate back to the previous screen
         viewModelScope.launch {
+
             dataSource.saveReminder(
                 ReminderDTO(
                     reminderData.title,
@@ -69,6 +78,7 @@ class SaveReminderViewModel(val app: Application, private val dataSource: Remind
                     reminderData.id
                 )
             )
+
             showLoading.value = false
             showToast.value = app.getString(R.string.reminder_saved)
             navigationCommand.value = NavigationCommand.Back
@@ -79,15 +89,19 @@ class SaveReminderViewModel(val app: Application, private val dataSource: Remind
      * Validate the entered data and show error to the user if there's any invalid data
      */
     fun validateEnteredData(reminderData: ReminderDataItem): Boolean {
+
+        // check if the title is not empty
         if (reminderData.title.isNullOrEmpty()) {
             showSnackBarInt.value = R.string.err_enter_title
             return false
         }
 
+        // check if the location is selected
         if (reminderData.location.isNullOrEmpty()) {
             showSnackBarInt.value = R.string.err_select_location
             return false
         }
+
         return true
     }
 }
