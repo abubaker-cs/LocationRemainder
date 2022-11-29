@@ -120,105 +120,147 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         // Get the map
         map = gMap
 
-        //
-        setMapStyle(map)
+        // Set the custom map style using the JSON style file
+        setCustomMapStyleUsingJSONFile(map)
 
-        //
-        setMapLongClick(map)
+        // Add a new marker when the user long clicks on the map
+        addNewMarkerOnLongClick(map)
 
-        // --- zoom to the user location after taking his permission
-        setPoiClick(map)
+        // Display info about the newly created marker
+        displayInfoAboutNewMarker(map)
 
-        //
-        enableMyLocation()
+        // Verify or request location permissions
+        verifyOrRequestLocationPermissions()
 
     }
 
     /**
-     * setMapStyle()
-     * Set the custom map style
-     *
-     * DONE - Add style to the map
+     * setCustomMapStyleUsingJSONFile()
      */
-    private fun setMapStyle(map: GoogleMap) {
+    private fun setCustomMapStyleUsingJSONFile(map: GoogleMap) {
+
         try {
-            // Customize the styling of the base map using a JSON object defined
-            // in a raw resource file.
+
+            // Set the map style from map_style.json file
             val success = map.setMapStyle(
+
+                // Load the style JSON file
                 MapStyleOptions.loadRawResourceStyle(
                     requireContext(),
                     R.raw.map_style
                 )
             )
+
+            // If the map style failed to load, log an error message to the user.
             if (!success) {
                 Log.e(TAG_LOGIN, "Style parsing failed.")
             }
+
         } catch (e: Resources.NotFoundException) {
             Log.e(TAG_LOGIN, "Can't find style. Error: ", e)
         }
     }
 
     /**
-     * setMapLongClick()
+     * addNewMarkerOnLongClick() - Add a new marker when the user long clicks on the map
      */
-    private fun setMapLongClick(map: GoogleMap) {
+    private fun addNewMarkerOnLongClick(map: GoogleMap) {
+
+        // Add a new marker when the user long clicks on the map
         map.setOnMapLongClickListener { latLng ->
-            // A Snippet is Additional text that's displayed below the title.
+
+            // Note: A Snippet is additional text that's displayed below the title.
             val snippet = String.format(
+
+                // The default locale is used to get the language code.
                 Locale.getDefault(),
+
+                // The Format for the Geo Coordinates
                 "Lat: %1$.5f, Long: %2$.5f",
+
+                // The latitude and longitude
                 latLng.latitude,
                 latLng.longitude
+
             )
 
+            // Add a marker
             map.addMarker(
+
+                // Configurations for the new marker
                 MarkerOptions()
+
+                    // Set the position of the marker
                     .position(latLng)
+
+                    // Set the title of the marker
                     .title(getString(R.string.dropped_pin))
+
+                    // Set the snippet of the marker
                     .snippet(snippet)
+
+                    // Set the icon of the marker
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+
             )
 
+
+            // Set the selected location and description
             selectedLocation = latLng
             selectedLocationDescription = "Custom location"
         }
+
     }
 
     /**
-     * setPoiClick()
+     * displayInfoAboutNewMarker()
      */
-    private fun setPoiClick(map: GoogleMap) {
+    private fun displayInfoAboutNewMarker(map: GoogleMap) {
+
+        // Set a click event handler for the POI (point of interest) layer.
         map.setOnPoiClickListener { poi ->
+
+            // Create a new marker for the POI that the user selected.
             val poiMarker = map.addMarker(
                 MarkerOptions()
                     .position(poi.latLng)
                     .title(poi.name)
             )
+
+            // Display the poi name in the marker's snippet.
             poiMarker?.showInfoWindow()
+
+            // Set the selected location
             selectedLocation = poi.latLng
+
+            // Set the selected location's title
             selectedLocationDescription = poiMarker?.title
         }
     }
 
     /**
-     * enableMyLocation()
+     * verifyOrRequestLocationPermissions()
      */
     @RequiresApi(Build.VERSION_CODES.N)
-    private fun enableMyLocation() {
+    private fun verifyOrRequestLocationPermissions() {
 
-        if (isPermissionGranted()) {
+        if (isFinePermissionGranted()) {
 
             // map.isMyLocationEnabled = true
-            Toast.makeText(context, "Location permission is granted.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Permission for Fine Location is granted.", Toast.LENGTH_SHORT)
+                .show()
 
         } else {
 
             // Permission to access the location is missing. Show rationale and request permission
-            requestPermissionLauncher.launch(
+            requestPermissionForCoarseFineLocations.launch(
+
+                // Ask the user to allow enable both the fine and coarse locations
                 arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION
                 )
+
             )
 
         }
@@ -226,42 +268,50 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     }
 
     /**
-     * isPermissionGranted()
+     * isFinePermissionGranted()
      */
-    private fun isPermissionGranted(): Boolean {
+    private fun isFinePermissionGranted(): Boolean {
+
+        // Check if the permission for the precise/fine location is granted
         return ContextCompat.checkSelfPermission(
             requireContext(),
             Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
+
     }
 
     /**
      *
      */
     @RequiresApi(Build.VERSION_CODES.N)
-    private val requestPermissionLauncher =
+    private val requestPermissionForCoarseFineLocations =
         registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
             when {
 
-                // Permission: ACCESS_FINE_LOCATION
-                permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
-                    enableMyLocation()
+                // Permission: Approximate location (ACCESS_COARSE_LOCATION)
+                permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
+                    verifyOrRequestLocationPermissions()
                 }
 
-                // Permission: ACCESS_COARSE_LOCATION
-                permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
-                    enableMyLocation()
+                // Permission: Precise location (ACCESS_FINE_LOCATION)
+                permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
+                    verifyOrRequestLocationPermissions()
                 }
 
                 else -> {
+
+                    // Log: Permission denied
                     Log.i("Permission: ", "Denied")
+
+                    // Failure Toast Message: Location permission was not granted.
                     Toast.makeText(
                         context,
                         "Location permission was not granted.",
                         Toast.LENGTH_LONG
                     ).show()
+
                 }
             }
         }
