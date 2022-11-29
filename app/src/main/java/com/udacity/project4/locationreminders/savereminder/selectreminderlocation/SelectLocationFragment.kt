@@ -14,6 +14,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.google.android.gms.location.*
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
@@ -112,13 +113,21 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     }
 
     /**
-     * onMapReady()
+     * onMapReady() - Called when the map is ready to be used.
      */
     @RequiresApi(Build.VERSION_CODES.N)
-    override fun onMapReady(gMap: GoogleMap) {
+    override fun onMapReady(googleMap: GoogleMap) {
 
         // Get the map
-        map = gMap
+        map = googleMap
+
+        //These coordinates represent the latitude and longitude of the Googleplex.
+        val latitude = 37.422160
+        val longitude = -122.084270
+        val zoomLevel = 15f
+        val homeLatLng = LatLng(latitude, longitude)
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLatLng, zoomLevel))
+        map.addMarker(MarkerOptions().position(homeLatLng))
 
         // Set the custom map style using the JSON style file
         setCustomMapStyleUsingJSONFile(map)
@@ -143,7 +152,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
             // Set the map style from map_style.json file
             val success = map.setMapStyle(
-
                 // Load the style JSON file
                 MapStyleOptions.loadRawResourceStyle(
                     requireContext(),
@@ -208,6 +216,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             // Set the selected location and description
             selectedLocation = latLng
             selectedLocationDescription = "Custom location"
+
         }
 
     }
@@ -253,7 +262,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         } else {
 
             // Permission to access the location is missing. Show rationale and request permission
-            requestPermissionForCoarseFineLocations.launch(
+            requestPermissionsForCoarseFineLocations.launch(
 
                 // Ask the user to allow enable both the fine and coarse locations
                 arrayOf(
@@ -281,10 +290,10 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     }
 
     /**
-     *
+     * Request Permissions For Coarse & Fine Locations
      */
     @RequiresApi(Build.VERSION_CODES.N)
-    private val requestPermissionForCoarseFineLocations =
+    private val requestPermissionsForCoarseFineLocations =
         registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
