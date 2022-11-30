@@ -141,18 +141,28 @@ class SaveReminderViewModel(val app: Application, private val dataSource: Remind
      */
     fun validateEnteredData(reminderData: ReminderDataItem): Boolean {
 
-        // check if the title is not empty
+        // check if the title is not null | empty
         if (reminderData.title.isNullOrEmpty()) {
+
+            // otherwise alert the user using SnackBar using following message:
             showSnackBarInt.value = R.string.err_enter_title
+
+            // return false
             return false
         }
 
-        // check if the location is selected
+        // check if the location data is not null | empty
         if (reminderData.location.isNullOrEmpty()) {
+
+            // otherwise alert the user using SnackBar using following message:
             showSnackBarInt.value = R.string.err_select_location
+
+            // return false
             return false
+
         }
 
         return true
+
     }
 }
