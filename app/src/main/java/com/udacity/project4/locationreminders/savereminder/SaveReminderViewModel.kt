@@ -16,11 +16,19 @@ import kotlinx.coroutines.launch
 class SaveReminderViewModel(val app: Application, private val dataSource: ReminderDataSource) :
     BaseViewModel(app) {
 
-
+    // Title of the reminder
     val reminderTitle = MutableLiveData<String?>()
+
+    // Description of the reminder
     val reminderDescription = MutableLiveData<String?>()
+
+    // Selected Location of the reminder
     val reminderSelectedLocationStr = MutableLiveData<String?>()
+
+    // Selected POI (Point of Interest)
     private val selectedPOI = MutableLiveData<PointOfInterest?>()
+
+    // Geo-Coordinates of the selected location
     val latitude = MutableLiveData<Double?>()
     val longitude = MutableLiveData<Double?>()
 
@@ -29,10 +37,20 @@ class SaveReminderViewModel(val app: Application, private val dataSource: Remind
      * Clear the live data objects to start fresh next time the view model gets called
      */
     fun onClear() {
+
+        // Clear the title
         reminderTitle.value = null
+
+        // Clear the description
         reminderDescription.value = null
+
+        // Clear the location
         reminderSelectedLocationStr.value = null
+
+        // Clear the POI (Point of Interest)
         selectedPOI.value = null
+
+        // Clear the Geo-Coordinates
         latitude.value = null
         longitude.value = null
     }
@@ -42,8 +60,12 @@ class SaveReminderViewModel(val app: Application, private val dataSource: Remind
      */
     fun validateAndSaveReminder(reminderData: ReminderDataItem) {
 
+        // Validate the entered data
         if (validateEnteredData(reminderData)) {
+
+            // Save the reminder when the validation is successful
             saveReminder(reminderData)
+
         }
 
     }
@@ -52,10 +74,17 @@ class SaveReminderViewModel(val app: Application, private val dataSource: Remind
      * onLocationSelected
      */
     fun onLocationSelected(selectedLocation: LatLng, selectedLocationDescription: String?) {
+
+        // Set the Geo-Coordinates
         latitude.value = selectedLocation.latitude
         longitude.value = selectedLocation.longitude
+
+        // Set the description for the location
         reminderSelectedLocationStr.value = selectedLocationDescription
+
+        // Navigate the user back to the previous screen
         navigationCommand.value = NavigationCommand.Back
+
     }
 
     /**
@@ -63,25 +92,47 @@ class SaveReminderViewModel(val app: Application, private val dataSource: Remind
      */
     fun saveReminder(reminderData: ReminderDataItem) {
 
+        // Show the loading indicator
         showLoading.value = true
 
         // Use coroutines to save the reminder and navigate back to the previous screen
         viewModelScope.launch {
 
+            // Save the reminder
             dataSource.saveReminder(
+
+                // Create a ReminderDTO object, based on the structure defined in the:
+                // @/locationremainder/data/dto/ReminderDTO.kt
                 ReminderDTO(
+
+                    // Set the title
                     reminderData.title,
+
+                    // Set the description
                     reminderData.description,
+
+                    // Set the location
                     reminderData.location,
+
+                    // Set the Geo-Coordinates
                     reminderData.latitude,
                     reminderData.longitude,
+
+                    // Set the ID
                     reminderData.id
                 )
+
             )
 
+            // Hide the loading indicator
             showLoading.value = false
+
+            // Show a toast message: Reminder Saved !
             showToast.value = app.getString(R.string.reminder_saved)
+
+            // Navigate the user back to the previous screen
             navigationCommand.value = NavigationCommand.Back
+
         }
     }
 

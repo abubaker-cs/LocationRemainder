@@ -45,6 +45,7 @@ import java.util.*
 
 @RequiresApi(Build.VERSION_CODES.S)
 class SaveReminderFragment : BaseFragment() {
+
     //Get the view model this time as a single to be shared with the another fragment
     override val _viewModel: SaveReminderViewModel by inject()
     private lateinit var binding: FragmentSaveReminderBinding
@@ -473,7 +474,7 @@ class SaveReminderFragment : BaseFragment() {
         // This is called after onStop() and before onDetach().
         super.onDestroy()
 
-        //make sure to clear the view model after destroy, as it's a single view model.
+        // make sure to clear the view model after destroy, as it's a single view model.
         _viewModel.onClear()
 
     }
@@ -487,7 +488,6 @@ class SaveReminderFragment : BaseFragment() {
         // onCreate(Bundle) will be called after this.
         super.onAttach(context)
 
-        // Get the context
         contxt = context
 
     }
