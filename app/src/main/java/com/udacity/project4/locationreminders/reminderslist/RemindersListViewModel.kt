@@ -23,7 +23,7 @@ class RemindersListViewModel(
      */
     fun loadReminders() {
 
-        //
+        // Set the showLoading value to true
         showLoading.value = true
 
         // I am using coroutine to get the reminders from the database and add them to the observable list
