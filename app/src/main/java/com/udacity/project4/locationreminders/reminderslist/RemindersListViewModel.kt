@@ -22,27 +22,55 @@ class RemindersListViewModel(
      * or show error if any
      */
     fun loadReminders() {
+
+        //
         showLoading.value = true
+
+        // I am using coroutine to get the reminders from the database and add them to the observable list
         viewModelScope.launch {
+
             //interacting with the dataSource has to be through a coroutine
             val result = dataSource.getReminders()
+
+            //
             showLoading.postValue(false)
+
             when (result) {
+
+                // Success
                 is Result.Success<*> -> {
+
+                    // dataList is a list of ReminderDataItem objects
                     val dataList = ArrayList<ReminderDataItem>()
+
+                    // Append all of the elements in the specified collection to the end of this list
                     dataList.addAll((result.data as List<ReminderDTO>).map { reminder ->
+
                         //map the reminder data from the DB to the be ready to be displayed on the UI
                         ReminderDataItem(
+
+                            // Title
                             reminder.title,
+
+                            // Description
                             reminder.description,
+
+                            // Location
                             reminder.location,
+
+                            // Reference for storing Geo-location information
                             reminder.latitude,
                             reminder.longitude,
+
+                            // ID
                             reminder.id
                         )
+
                     })
                     remindersList.value = dataList
                 }
+
+                // Error: show error message
                 is Result.Error ->
                     showSnackBar.value = result.message
             }

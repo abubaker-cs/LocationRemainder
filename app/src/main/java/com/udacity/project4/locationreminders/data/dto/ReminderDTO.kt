@@ -18,10 +18,20 @@ import java.util.*
 
 @Entity(tableName = "reminders")
 data class ReminderDTO(
+
+    // Title
     @ColumnInfo(name = "title") var title: String?,
+
+    // Description
     @ColumnInfo(name = "description") var description: String?,
+
+    // Location
     @ColumnInfo(name = "location") var location: String?,
+
+    // These columns will be used for storing Geo-location information
     @ColumnInfo(name = "latitude") var latitude: Double?,
     @ColumnInfo(name = "longitude") var longitude: Double?,
+
+    // ID
     @PrimaryKey @ColumnInfo(name = "entry_id") val id: String = UUID.randomUUID().toString()
 )

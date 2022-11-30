@@ -55,20 +55,20 @@ class SaveReminderViewModel(val app: Application, private val dataSource: Remind
         longitude.value = null
     }
 
-    /**
-     * Validate the entered data then saves the reminder data to the DataSource
-     */
-    fun validateAndSaveReminder(reminderData: ReminderDataItem) {
-
-        // Validate the entered data
-        if (validateEnteredData(reminderData)) {
-
-            // Save the reminder when the validation is successful
-            saveReminder(reminderData)
-
-        }
-
-    }
+//    /**
+//     * Validate the entered data then saves the reminder data to the DataSource
+//     */
+//    fun validateAndSaveReminder(reminderData: ReminderDataItem) {
+//
+//        // Validate the entered data
+//        if (validateEnteredData(reminderData)) {
+//
+//            // Save the reminder when the validation is successful
+//            saveReminder(reminderData)
+//
+//        }
+//
+//    }
 
     /**
      * onLocationSelected

@@ -20,7 +20,6 @@ class ReminderListFragment : BaseFragment() {
     //use Koin to retrieve the ViewModel instance
     override val _viewModel: RemindersListViewModel by viewModel()
 
-
     // FragmentRemindersBinding is a generated class that contains all the views in the fragment_reminders.xml layout
     private lateinit var binding: FragmentRemindersBinding
 
