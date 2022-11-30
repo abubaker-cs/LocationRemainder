@@ -31,7 +31,7 @@ import java.util.*
 class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     //Use Koin to get the view model of the SaveReminder
-    override val _viewModel: SaveReminderViewModel by inject()
+    override val baseViewModel: SaveReminderViewModel by inject()
 
     private lateinit var binding: FragmentSelectLocationBinding
 
@@ -52,7 +52,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_select_location, container, false)
 
-        binding.viewModel = _viewModel
+        binding.viewModel = baseViewModel
         binding.lifecycleOwner = this
 
         setHasOptionsMenu(true)
@@ -70,7 +70,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         binding.saveRemainderLocationButton.setOnClickListener {
 
             // Set the selected location and description
-            _viewModel.onLocationSelected(selectedLocation, selectedLocationDescription)
+            baseViewModel.onLocationSelected(selectedLocation, selectedLocationDescription)
 
         }
 

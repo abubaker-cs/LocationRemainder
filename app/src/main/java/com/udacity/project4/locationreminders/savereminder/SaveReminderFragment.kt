@@ -47,7 +47,7 @@ import java.util.*
 class SaveReminderFragment : BaseFragment() {
 
     //Get the view model this time as a single to be shared with the another fragment
-    override val _viewModel: SaveReminderViewModel by inject()
+    override val baseViewModel: SaveReminderViewModel by inject()
     private lateinit var binding: FragmentSaveReminderBinding
 
     private val runningQOrLater = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
@@ -96,7 +96,7 @@ class SaveReminderFragment : BaseFragment() {
         // Set whether home should be displayed as an "up" affordance.
         setDisplayHomeAsUpEnabled(true)
 
-        binding.viewModel = _viewModel
+        binding.viewModel = baseViewModel
 
         geofencingClient = LocationServices.getGeofencingClient(this.contxt as Activity)
 
@@ -116,7 +116,7 @@ class SaveReminderFragment : BaseFragment() {
         binding.selectLocation.setOnClickListener {
 
             // Navigate to: SelectLocationFragment
-            _viewModel.navigationCommand.value =
+            baseViewModel.navigationCommand.value =
                 NavigationCommand.To(SaveReminderFragmentDirections.actionSaveReminderFragmentToSelectLocationFragment())
 
         }
@@ -126,19 +126,19 @@ class SaveReminderFragment : BaseFragment() {
         binding.saveReminder.setOnClickListener {
 
             // Title
-            val title = _viewModel.reminderTitle.value
+            val title = baseViewModel.reminderTitle.value
 
             // Description
-            val description = _viewModel.reminderDescription.value
+            val description = baseViewModel.reminderDescription.value
 
             // Location
-            val location = _viewModel.reminderSelectedLocationStr.value
+            val location = baseViewModel.reminderSelectedLocationStr.value
 
             // Latitude: X-Axis
-            val latitude = _viewModel.latitude.value
+            val latitude = baseViewModel.latitude.value
 
             // Longitude: Y-Axis
-            val longitude = _viewModel.longitude.value
+            val longitude = baseViewModel.longitude.value
 
             id = UUID.randomUUID().toString()
 
@@ -258,7 +258,7 @@ class SaveReminderFragment : BaseFragment() {
                 )
 
                 // Save the reminder to the local database
-                _viewModel.saveReminder(reminderDataItem)
+                baseViewModel.saveReminder(reminderDataItem)
 
             }
 
@@ -475,7 +475,7 @@ class SaveReminderFragment : BaseFragment() {
         super.onDestroy()
 
         // make sure to clear the view model after destroy, as it's a single view model.
-        _viewModel.onClear()
+        baseViewModel.onClear()
 
     }
 
