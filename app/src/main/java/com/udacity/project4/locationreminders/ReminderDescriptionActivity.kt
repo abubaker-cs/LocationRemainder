@@ -18,14 +18,20 @@ class ReminderDescriptionActivity : AppCompatActivity() {
 
     companion object {
 
-        //
         private const val EXTRA_ReminderDataItem = "EXTRA_ReminderDataItem"
 
         // receive the reminder object after the user clicks on the notification
         fun newIntent(context: Context, reminderDataItem: ReminderDataItem): Intent {
+
+            // create an intent and pass the reminder object to the ReminderDescriptionActivity
             val intent = Intent(context, ReminderDescriptionActivity::class.java)
+
+            // put the reminder object in the intent
             intent.putExtra(EXTRA_ReminderDataItem, reminderDataItem)
+
+            // return the intent
             return intent
+
         }
 
     }
@@ -33,16 +39,18 @@ class ReminderDescriptionActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
-
         super.onCreate(savedInstanceState)
 
-        //
+        // Inflate the layout @layout/activity_reminder_description.xml
         binding = DataBindingUtil.setContentView(
             this,
             R.layout.activity_reminder_description
         )
 
-        // Implementation of the reminder details
+        /**
+         * reminderDataItem = Reference to the data variable in @layout/activity_reminder_description.xml
+         * getSerializableExtra() = Retrieve extended data from the intent.
+         */
         binding.reminderDataItem =
             intent.getSerializableExtra(EXTRA_ReminderDataItem) as ReminderDataItem
 
