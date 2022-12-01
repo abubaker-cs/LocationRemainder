@@ -48,14 +48,21 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
      */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+    ): View {
+
+        // Inflate the layout: @layout/fragment_select_location.xml
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_select_location, container, false)
 
+        // Set the ViewModel
         binding.viewModel = baseViewModel
+
+        // Set the LifecycleOwner
         binding.lifecycleOwner = this
 
         setHasOptionsMenu(true)
+
+        // Set the DisplayHomeAsUpEnabled to true
         setDisplayHomeAsUpEnabled(true)
 
         // SupportMapFragment is a fragment that displays a Google map
@@ -200,8 +207,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                 "Lat: %1$.5f, Long: %2$.5f",
 
                 // The latitude and longitude
-                latLng.latitude,
-                latLng.longitude
+                latLng.latitude, latLng.longitude
 
             )
 
@@ -229,6 +235,8 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             // Set the selected location and description
             selectedLocation = latLng
             selectedLocationDescription = "Custom location"
+
+            Log.e("LatLng (add): ", selectedLocation.toString())
 
         }
 

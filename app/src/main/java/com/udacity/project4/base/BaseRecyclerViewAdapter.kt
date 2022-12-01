@@ -22,13 +22,17 @@ abstract class BaseRecyclerViewAdapter<T>(private val callback: ((item: T) -> Un
     override fun getItemCount() = _items.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DataBindingViewHolder<T> {
+
+
         val layoutInflater = LayoutInflater.from(parent.context)
 
         val binding = DataBindingUtil
             .inflate<ViewDataBinding>(layoutInflater, getLayoutRes(viewType), parent, false)
 
+        // Set the lifecycle owner to the DataBindingViewHolder so DataBinding can observe LiveData
         binding.lifecycleOwner = getLifecycleOwner()
 
+        // Return the DataBindingViewHolder
         return DataBindingViewHolder(binding)
     }
 
