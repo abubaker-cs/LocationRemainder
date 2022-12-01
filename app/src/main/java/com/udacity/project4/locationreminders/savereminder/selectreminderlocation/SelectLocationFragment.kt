@@ -76,6 +76,9 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         // Set the onClickListener for the save remainder location button
         binding.saveRemainderLocationButton.setOnClickListener {
 
+            Log.e("LatLng: ", "SAVE - selected Location: $selectedLocation")
+            Log.e("LatLng: ", "SAVE - selected Location Description: $selectedLocationDescription")
+
             // Set the selected location and description
             baseViewModel.onLocationSelected(selectedLocation, selectedLocationDescription)
 
@@ -236,7 +239,9 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             selectedLocation = latLng
             selectedLocationDescription = "Custom location"
 
-            Log.e("LatLng (add): ", selectedLocation.toString())
+            Log.e("LatLng: ", "ADD - Lat lag: $latLng")
+            Log.e("LatLng: ", "ADD - selected Location: $selectedLocation")
+            Log.e("LatLng: ", "ADD - selected Location Description: $selectedLocationDescription")
 
         }
 

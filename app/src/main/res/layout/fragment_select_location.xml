@@ -10,6 +10,7 @@
             name="viewModel"
             type="com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel"
             />
+
     </data>
 
     <!-- Map (Location Selector) -->

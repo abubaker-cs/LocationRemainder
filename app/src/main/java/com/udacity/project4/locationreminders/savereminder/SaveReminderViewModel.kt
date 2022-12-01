@@ -1,6 +1,7 @@
 package com.udacity.project4.locationreminders.savereminder
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
@@ -55,20 +56,20 @@ class SaveReminderViewModel(val app: Application, private val dataSource: Remind
         longitude.value = null
     }
 
-//    /**
-//     * Validate the entered data then saves the reminder data to the DataSource
-//     */
-//    fun validateAndSaveReminder(reminderData: ReminderDataItem) {
-//
-//        // Validate the entered data
-//        if (validateEnteredData(reminderData)) {
-//
-//            // Save the reminder when the validation is successful
-//            saveReminder(reminderData)
-//
-//        }
-//
-//    }
+    /**
+     * Validate the entered data then saves the reminder data to the DataSource
+     */
+    fun validateAndSaveReminder(reminderData: ReminderDataItem) {
+
+        // Validate the entered data
+        if (validateEnteredData(reminderData)) {
+
+            // Save the reminder when the validation is successful
+            saveReminder(reminderData)
+
+        }
+
+    }
 
     /**
      * onLocationSelected
@@ -79,8 +80,15 @@ class SaveReminderViewModel(val app: Application, private val dataSource: Remind
         latitude.value = selectedLocation.latitude
         longitude.value = selectedLocation.longitude
 
+        Log.e("LatLng: ", "onLocationSelected - selected Location: $selectedLocationDescription")
+
         // Set the description for the location
         reminderSelectedLocationStr.value = selectedLocationDescription
+
+        Log.e(
+            "LatLng: ",
+            "onLocationSelected - selected Location: ${reminderSelectedLocationStr.value}"
+        )
 
         // Navigate the user back to the previous screen
         navigationCommand.value = NavigationCommand.Back

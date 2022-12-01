@@ -52,6 +52,7 @@ class SaveReminderFragment : BaseFragment() {
 
     private val runningQOrLater = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
     private lateinit var geofencingClient: GeofencingClient
+    private lateinit var reminder: ReminderDataItem
 
     private var title: String? = null
     private var description: String? = null
@@ -142,26 +143,45 @@ class SaveReminderFragment : BaseFragment() {
 
             id = UUID.randomUUID().toString()
 
-            // Check if the user has entered all the required fields
-            if (title == null || description == null || latitude == null || longitude == null) {
+            reminder = ReminderDataItem(title, description, location, latitude, longitude)
 
-                // Show a Toast message: "Please enter all the required fields"
-                Snackbar.make(
-                    binding.root,
-                    getString(R.string.save_reminder_error_desc),
-                    Snackbar.LENGTH_SHORT
-                ).show()
-
-            } else {
-
-                // Create a ReminderDataItem object
+            if (baseViewModel.validateEnteredData(reminder)) {
                 checkPermissionsAndStartGeofencing()
-
             }
+
+            // Check if the user has entered all the required fields
+//            when {
+//
+//                title == null -> {
+//                    Snackbar.make(binding.root, "Title?", Snackbar.LENGTH_SHORT).show()
+//                }
+//
+//                description == null -> {
+//                    Snackbar.make(binding.root, "Description?", Snackbar.LENGTH_SHORT).show()
+//                }
+//
+//                location == null -> {
+//                    Snackbar.make(binding.root, "Location?", Snackbar.LENGTH_SHORT).show()
+//                }
+//
+//                latitude == null || longitude == null -> {
+//                    Snackbar.make(binding.root, "Lat + Long?", Snackbar.LENGTH_SHORT).show()
+//                }
+//
+//                else -> {
+//
+//                    // Create a ReminderDataItem object
+//                    checkPermissionsAndStartGeofencing()
+//
+//                }
+//            }
 
         }
 
     }
+
+
+    // getString(R.string.save_reminder_error_desc),
 
     /**
      * val 02 - requestPermissionLauncher
@@ -444,20 +464,32 @@ class SaveReminderFragment : BaseFragment() {
 
             // Success: Geofence added successfully
             addOnSuccessListener {
-                Toast.makeText(
-                    contxt,
-                    contxt.getString(R.string.geofence_added),
-                    Toast.LENGTH_LONG
-                ).show()
+
+                baseViewModel.showSnackBarInt.value = R.string.geofences_added
+                baseViewModel.validateAndSaveReminder(reminder)
+                Log.i("Added geofence: ", geofence.requestId)
+
+
+//                Toast.makeText(
+//                    contxt,
+//                    contxt.getString(R.string.geofence_added),
+//                    Toast.LENGTH_LONG
+//                ).show()
             }
 
             // Failure: An exception occurred *****
             addOnFailureListener {
-                Toast.makeText(
-                    contxt,
-                    "An exception occurred: ${it.message}",
-                    Toast.LENGTH_LONG
-                ).show()
+
+                baseViewModel.showSnackBarInt.value = R.string.geofences_not_added
+                if ((it.message != null)) {
+                    Log.e("Failed to add geofence:", it.message!!)
+                }
+
+//                Toast.makeText(
+//                    contxt,
+//                    "An exception occurred: ${it.message}",
+//                    Toast.LENGTH_LONG
+//                ).show()
             }
 
         }
