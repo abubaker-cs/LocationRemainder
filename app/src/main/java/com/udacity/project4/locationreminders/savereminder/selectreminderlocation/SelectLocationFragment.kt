@@ -6,14 +6,12 @@ import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import com.google.android.gms.location.*
@@ -42,16 +40,9 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     private lateinit var binding: FragmentSelectLocationBinding
 
     private lateinit var map: GoogleMap
-
     private var latitude: Double = 0.0
     private var longitude: Double = 0.0
     private var name: String = ""
-
-    // Default Location: Daewoo Express Thokar Niaz Baig, Lahore - Pakistan
-    private var selectedLocation: LatLng = LatLng(31.470095, 74.238973)
-
-    //
-    private var selectedLocationDescription: String? = null
 
     /**
      * Override: onCreateView()
@@ -60,7 +51,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
 
-        // Inflate the layout: @layout/fragment_select_location.xml
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_select_location, container, false)
 
@@ -88,11 +78,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
         // Call this function after the user confirms on the selected location
         // Set the onClickListener for the save remainder location button
-        binding.onSaveButtonClicked = View.OnClickListener {
-            onLocationSelected()
-        }
-
-        // onLocationSelected
+        binding.onSaveButtonClicked = View.OnClickListener { onLocationSelected() }
 
         return binding.root
     }
@@ -100,6 +86,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     /**
      * onCreateOptionsMenu()
      */
+    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
 
         // Inflate the Map Options Menu, this adds items to the action bar if it is present.
@@ -110,6 +97,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     /**
      * onOptionsItemSelected()
      */
+    @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
 
         // NOTE: Change the map type based on the user's selection.
@@ -145,7 +133,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     /**
      * onMapReady() - Called when the map is ready to be used.
      */
-    @RequiresApi(Build.VERSION_CODES.N)
     override fun onMapReady(googleMap: GoogleMap) {
 
         // Get the map
@@ -161,24 +148,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
         // Display info about the newly created marker
         setMapLongClick(map)
-
-    }
-
-    /**
-     * zoomToCurrentDeviceLocation()
-     */
-    private fun zoomToCurrentDeviceLocation() {
-
-        // TODO: Get the current Device Location and ZOOM to proper Level
-        // reference: https://developers.google.com/maps/documentation/android-sdk/current-place-tutorial#get-the-current-place
-
-        //These coordinates represent the latitude and longitude of the Googleplex.
-        val latitude = 31.470095
-        val longitude = 74.238973
-        val zoomLevel = 15f
-        val homeLatLng = LatLng(latitude, longitude)
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLatLng, zoomLevel))
-        map.addMarker(MarkerOptions().position(homeLatLng))
 
     }
 
@@ -211,7 +180,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     /**
      * addNewMarkerOnLongClick() - Add a new marker when the user long clicks on the map
      */
-    private fun setPoiClick(map: GoogleMap) {
+    private fun setMapLongClick(map: GoogleMap) {
 
         // Add a new marker when the user long clicks on the map
         map.setOnMapLongClickListener { latLng ->
@@ -273,10 +242,16 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     /**
      * displayInfoAboutNewMarker()
      */
-    private fun setMapLongClick(map: GoogleMap) {
+    private fun setPoiClick(map: GoogleMap) {
 
         // Set a click event handler for the POI (point of interest) layer.
         map.setOnPoiClickListener { poi ->
+
+            map.clear()
+
+            latitude = poi.latLng.latitude
+            longitude = poi.latLng.longitude
+            name = poi.name
 
             // Create a new marker for the POI that the user selected.
             val poiMarker = map.addMarker(
@@ -285,15 +260,17 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                     .title(poi.name)
             )
 
-            // Display the poi name in the marker's snippet.
+            map.addCircle(
+                CircleOptions()
+                    .center(poi.latLng)
+                    .radius(150.0)
+                    .strokeColor(Color.argb(255, 0, 0, 255))
+                    .fillColor(Color.argb(60, 0, 0, 255)).strokeWidth(5F)
+            )
+
             poiMarker?.showInfoWindow()
-
-            // Set the selected location
-            selectedLocation = poi.latLng
-
-            // Set the selected location's title
-            selectedLocationDescription = poiMarker?.title
         }
+
     }
 
     @SuppressLint("MissingPermission")
@@ -319,7 +296,9 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                 Manifest.permission.ACCESS_FINE_LOCATION
             )
                     == PackageManager.PERMISSION_GRANTED) -> {
+
                 map.isMyLocationEnabled = true
+
                 getCurrentLocation()
                 Toast.makeText(context, "Location permission is granted.", Toast.LENGTH_LONG).show()
             }
@@ -338,7 +317,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     /**
      * Request Permissions For Coarse & Fine Locations
      */
-    @RequiresApi(Build.VERSION_CODES.N)
     private fun requestPermission() {
         locationPermissionRequest =
             registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions())
