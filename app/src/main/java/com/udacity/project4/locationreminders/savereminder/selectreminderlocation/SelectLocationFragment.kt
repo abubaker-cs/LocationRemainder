@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
@@ -30,12 +31,18 @@ import java.util.*
 
 class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
-    //Use Koin to get the view model of the SaveReminder
-    override val baseViewModel: SaveReminderViewModel by inject()
+    private lateinit var locationPermissionRequest: ActivityResultLauncher<Array<String>>
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
+    //Use Koin to get the view model of the SaveReminder
+    override val _viewModel: SaveReminderViewModel by inject()
     private lateinit var binding: FragmentSelectLocationBinding
 
     private lateinit var map: GoogleMap
+
+    private var latitude: Double = 0.0
+    private var longitude: Double = 0.0
+    private var name: String = ""
 
     // Default Location: Daewoo Express Thokar Niaz Baig, Lahore - Pakistan
     private var selectedLocation: LatLng = LatLng(31.470095, 74.238973)
@@ -55,10 +62,12 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             DataBindingUtil.inflate(inflater, R.layout.fragment_select_location, container, false)
 
         // Set the ViewModel
-        binding.viewModel = baseViewModel
+        binding.viewModel = _viewModel
 
         // Set the LifecycleOwner
         binding.lifecycleOwner = this
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
         setHasOptionsMenu(true)
 
@@ -67,7 +76,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
         // SupportMapFragment is a fragment that displays a Google map
         val mapFragment =
-            childFragmentManager.findFragmentById(R.id.select_location_map) as SupportMapFragment
+            childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
 
         // Get the map asynchronously
         mapFragment.getMapAsync(this)
@@ -76,11 +85,11 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         // Set the onClickListener for the save remainder location button
         binding.saveRemainderLocationButton.setOnClickListener {
 
-            Log.e("LatLng: ", "SAVE - selected Location: $selectedLocation")
-            Log.e("LatLng: ", "SAVE - selected Location Description: $selectedLocationDescription")
+//            Log.e("LatLng: ", "SAVE - selected Location: $selectedLocation")
+//            Log.e("LatLng: ", "SAVE - selected Location Description: $selectedLocationDescription")
 
             // Set the selected location and description
-            baseViewModel.onLocationSelected(selectedLocation, selectedLocationDescription)
+            _viewModel.onLocationSelected(selectedLocation, selectedLocationDescription)
 
         }
 

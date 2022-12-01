@@ -47,7 +47,7 @@ import java.util.*
 class SaveReminderFragment : BaseFragment() {
 
     //Get the view model this time as a single to be shared with the another fragment
-    override val baseViewModel: SaveReminderViewModel by inject()
+    override val _viewModel: SaveReminderViewModel by inject()
     private lateinit var binding: FragmentSaveReminderBinding
 
     private val runningQOrLater = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
@@ -97,7 +97,7 @@ class SaveReminderFragment : BaseFragment() {
         // Set whether home should be displayed as an "up" affordance.
         setDisplayHomeAsUpEnabled(true)
 
-        binding.viewModel = baseViewModel
+        binding.viewModel = _viewModel
 
         geofencingClient = LocationServices.getGeofencingClient(this.contxt as Activity)
 
@@ -117,7 +117,7 @@ class SaveReminderFragment : BaseFragment() {
         binding.selectLocation.setOnClickListener {
 
             // Navigate to: SelectLocationFragment
-            baseViewModel.navigationCommand.value =
+            _viewModel.navigationCommand.value =
                 NavigationCommand.To(SaveReminderFragmentDirections.actionSaveReminderFragmentToSelectLocationFragment())
 
         }
@@ -127,25 +127,25 @@ class SaveReminderFragment : BaseFragment() {
         binding.saveReminder.setOnClickListener {
 
             // Title
-            val title = baseViewModel.reminderTitle.value
+            val title = _viewModel.reminderTitle.value
 
             // Description
-            val description = baseViewModel.reminderDescription.value
+            val description = _viewModel.reminderDescription.value
 
             // Location
-            val location = baseViewModel.reminderSelectedLocationStr.value
+            val location = _viewModel.reminderSelectedLocationStr.value
 
             // Latitude: X-Axis
-            val latitude = baseViewModel.latitude.value
+            val latitude = _viewModel.latitude.value
 
             // Longitude: Y-Axis
-            val longitude = baseViewModel.longitude.value
+            val longitude = _viewModel.longitude.value
 
             id = UUID.randomUUID().toString()
 
             reminder = ReminderDataItem(title, description, location, latitude, longitude)
 
-            if (baseViewModel.validateEnteredData(reminder)) {
+            if (_viewModel.validateEnteredData(reminder)) {
                 checkPermissionsAndStartGeofencing()
             }
 
@@ -278,7 +278,7 @@ class SaveReminderFragment : BaseFragment() {
                 )
 
                 // Save the reminder to the local database
-                baseViewModel.saveReminder(reminderDataItem)
+                _viewModel.saveReminder(reminderDataItem)
 
             }
 
@@ -465,8 +465,8 @@ class SaveReminderFragment : BaseFragment() {
             // Success: Geofence added successfully
             addOnSuccessListener {
 
-                baseViewModel.showSnackBarInt.value = R.string.geofences_added
-                baseViewModel.validateAndSaveReminder(reminder)
+                _viewModel.showSnackBarInt.value = R.string.geofences_added
+                _viewModel.validateAndSaveReminder(reminder)
                 Log.i("Added geofence: ", geofence.requestId)
 
 
@@ -480,7 +480,7 @@ class SaveReminderFragment : BaseFragment() {
             // Failure: An exception occurred *****
             addOnFailureListener {
 
-                baseViewModel.showSnackBarInt.value = R.string.geofences_not_added
+                _viewModel.showSnackBarInt.value = R.string.geofences_not_added
                 if ((it.message != null)) {
                     Log.e("Failed to add geofence:", it.message!!)
                 }
@@ -507,7 +507,7 @@ class SaveReminderFragment : BaseFragment() {
         super.onDestroy()
 
         // make sure to clear the view model after destroy, as it's a single view model.
-        baseViewModel.onClear()
+        _viewModel.onClear()
 
     }
 

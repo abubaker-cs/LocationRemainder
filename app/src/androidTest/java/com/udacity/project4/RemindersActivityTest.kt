@@ -134,11 +134,11 @@ class RemindersActivityTest : AutoCloseKoinTest() {
         Thread.sleep(1000)
 
         onView(ViewMatchers.withId(R.id.selectLocation)).perform(ViewActions.click())
-        onView(withId(R.id.select_location_map)).perform(ViewActions.click())
+        onView(withId(R.id.map)).perform(ViewActions.click())
 
         Thread.sleep(3000)
 
-        onView(withId(R.id.save_remainder_location_button)).perform(ViewActions.click())
+        onView(withId(R.id.save_button)).perform(ViewActions.click())
         onView(ViewMatchers.withId(R.id.saveReminder)).perform(ViewActions.click())
 
         onView(ViewMatchers.withText(R.string.reminder_saved)).inRoot(
@@ -175,12 +175,12 @@ class RemindersActivityTest : AutoCloseKoinTest() {
         Thread.sleep(1000)
 
         onView(ViewMatchers.withId(R.id.selectLocation)).perform(ViewActions.click())
-        onView(withId(R.id.select_location_map)).perform(ViewActions.click())
+        onView(withId(R.id.map)).perform(ViewActions.click())
 
         Thread.sleep(3000)
 
         onView(
-            withId(R.id.save_remainder_location_button).perform(ViewActions.click())
+            withId(R.id.save_button).perform(ViewActions.click())
 
                     Espresso . onView (ViewMatchers.withId(R.id.saveReminder)).perform(ViewActions.click())
 

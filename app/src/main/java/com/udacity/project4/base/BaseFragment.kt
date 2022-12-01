@@ -13,33 +13,33 @@ abstract class BaseFragment : Fragment() {
     /**
      * Every fragment has to have an instance of a view model that extends from the BaseViewModel
      */
-    abstract val baseViewModel: BaseViewModel
+    abstract val _viewModel: BaseViewModel
 
     override fun onStart() {
 
         super.onStart()
 
         // Error Message Observer
-        baseViewModel.showErrorMessage.observe(this, Observer {
+        _viewModel.showErrorMessage.observe(this, Observer {
             Toast.makeText(activity, it, Toast.LENGTH_LONG).show()
         })
 
         // Toast Message Observer
-        baseViewModel.showToast.observe(this, Observer {
+        _viewModel.showToast.observe(this, Observer {
             Toast.makeText(activity, it, Toast.LENGTH_LONG).show()
         })
 
         // SnackBar Message Observer
-        baseViewModel.showSnackBar.observe(this, Observer {
+        _viewModel.showSnackBar.observe(this, Observer {
             Snackbar.make(this.requireView(), it, Snackbar.LENGTH_LONG).show()
         })
 
-        baseViewModel.showSnackBarInt.observe(this, Observer {
+        _viewModel.showSnackBarInt.observe(this, Observer {
             Snackbar.make(this.requireView(), getString(it), Snackbar.LENGTH_LONG).show()
         })
 
         // Navigation Observer
-        baseViewModel.navigationCommand.observe(this, Observer { command ->
+        _viewModel.navigationCommand.observe(this, Observer { command ->
             when (command) {
 
                 // Navigate to the next fragment
