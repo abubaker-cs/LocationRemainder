@@ -2,8 +2,10 @@ package com.udacity.project4.locationreminders.savereminder.selectreminderlocati
 
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.content.res.Resources
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -12,7 +14,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat
+import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -23,6 +25,7 @@ import com.google.android.gms.maps.model.*
 import com.udacity.project4.Constants.TAG_LOGIN
 import com.udacity.project4.R
 import com.udacity.project4.base.BaseFragment
+import com.udacity.project4.base.NavigationCommand
 import com.udacity.project4.databinding.FragmentSelectLocationBinding
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
@@ -81,17 +84,15 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         // Get the map asynchronously
         mapFragment.getMapAsync(this)
 
+        requestPermission()
+
         // Call this function after the user confirms on the selected location
         // Set the onClickListener for the save remainder location button
-        binding.saveRemainderLocationButton.setOnClickListener {
-
-//            Log.e("LatLng: ", "SAVE - selected Location: $selectedLocation")
-//            Log.e("LatLng: ", "SAVE - selected Location Description: $selectedLocationDescription")
-
-            // Set the selected location and description
-            _viewModel.onLocationSelected(selectedLocation, selectedLocationDescription)
-
+        binding.onSaveButtonClicked = View.OnClickListener {
+            onLocationSelected()
         }
+
+        // onLocationSelected
 
         return binding.root
     }
@@ -132,6 +133,16 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     }
 
     /**
+     * onLocationSelected()
+     */
+    private fun onLocationSelected() {
+        _viewModel.latitude.value = latitude
+        _viewModel.longitude.value = longitude
+        _viewModel.reminderSelectedLocationStr.value = name
+        _viewModel.navigationCommand.value = NavigationCommand.Back
+    }
+
+    /**
      * onMapReady() - Called when the map is ready to be used.
      */
     @RequiresApi(Build.VERSION_CODES.N)
@@ -140,20 +151,16 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         // Get the map
         map = googleMap
 
-        // Zoom the current device location
-        zoomToCurrentDeviceLocation()
+        map.uiSettings.isZoomControlsEnabled = true
 
         // Set the custom map style using the JSON style file
-        setCustomMapStyleUsingJSONFile(map)
+        setMapStyle(map)
 
         // Add a new marker when the user long clicks on the map
-        addNewMarkerOnLongClick(map)
+        setPoiClick(map)
 
         // Display info about the newly created marker
-        displayInfoAboutNewMarker(map)
-
-        // Verify or request location permissions
-        verifyOrRequestLocationPermissions()
+        setMapLongClick(map)
 
     }
 
@@ -178,7 +185,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     /**
      * setCustomMapStyleUsingJSONFile()
      */
-    private fun setCustomMapStyleUsingJSONFile(map: GoogleMap) {
+    private fun setMapStyle(map: GoogleMap) {
 
         try {
 
@@ -186,7 +193,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             val success = map.setMapStyle(
                 // Load the style JSON file
                 MapStyleOptions.loadRawResourceStyle(
-                    requireContext(),
+                    requireActivity(),
                     R.raw.map_style
                 )
             )
@@ -204,10 +211,17 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     /**
      * addNewMarkerOnLongClick() - Add a new marker when the user long clicks on the map
      */
-    private fun addNewMarkerOnLongClick(map: GoogleMap) {
+    private fun setPoiClick(map: GoogleMap) {
 
         // Add a new marker when the user long clicks on the map
         map.setOnMapLongClickListener { latLng ->
+
+            map.clear()
+
+            latitude = latLng.latitude
+            longitude = latLng.longitude
+
+            name = "Unknown"
 
             // Note: A Snippet is additional text that's displayed below the title.
             val snippet = String.format(
@@ -219,7 +233,8 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                 "Lat: %1$.5f, Long: %2$.5f",
 
                 // The latitude and longitude
-                latLng.latitude, latLng.longitude
+                latLng.latitude,
+                latLng.longitude
 
             )
 
@@ -243,14 +258,13 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
             )
 
-
-            // Set the selected location and description
-            selectedLocation = latLng
-            selectedLocationDescription = "Custom location"
-
-            Log.e("LatLng: ", "ADD - Lat lag: $latLng")
-            Log.e("LatLng: ", "ADD - selected Location: $selectedLocation")
-            Log.e("LatLng: ", "ADD - selected Location Description: $selectedLocationDescription")
+            map.addCircle(
+                CircleOptions()
+                    .center(latLng)
+                    .radius(150.0)
+                    .strokeColor(Color.argb(255, 0, 0, 255))
+                    .fillColor(Color.argb(60, 0, 0, 255)).strokeWidth(5F)
+            )
 
         }
 
@@ -259,7 +273,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     /**
      * displayInfoAboutNewMarker()
      */
-    private fun displayInfoAboutNewMarker(map: GoogleMap) {
+    private fun setMapLongClick(map: GoogleMap) {
 
         // Set a click event handler for the POI (point of interest) layer.
         map.setOnPoiClickListener { poi ->
@@ -282,82 +296,76 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         }
     }
 
-    /**
-     * verifyOrRequestLocationPermissions()
-     */
-    @RequiresApi(Build.VERSION_CODES.N)
-    private fun verifyOrRequestLocationPermissions() {
-
-        if (isFinePermissionGranted()) {
-
-            // map.isMyLocationEnabled = true
-            Toast.makeText(context, "Permission for Fine Location is granted.", Toast.LENGTH_SHORT)
-                .show()
-
-        } else {
-
-            // Permission to access the location is missing. Show rationale and request permission
-            requestPermissionsForCoarseFineLocations.launch(
-
-                // Ask the user to allow enable both the fine and coarse locations
-                arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                )
-
-            )
-
+    @SuppressLint("MissingPermission")
+    private fun getCurrentLocation() {
+        fusedLocationClient.lastLocation.addOnSuccessListener(requireActivity()) { location ->
+            // Got last known location. In some rare situations this can be null.
+            if (location != null) {
+                latitude = location.latitude
+                longitude = location.longitude
+                name = "Current Location"
+                val currentLatLng = LatLng(latitude, longitude)
+                val markerOptions = MarkerOptions().position(currentLatLng)
+                map.addMarker(markerOptions)
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15F))
+            }
         }
-
     }
 
-    /**
-     * isFinePermissionGranted()
-     */
-    private fun isFinePermissionGranted(): Boolean {
+    private fun enableUserLocation() {
+        when {
+            (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+                    == PackageManager.PERMISSION_GRANTED) -> {
+                map.isMyLocationEnabled = true
+                getCurrentLocation()
+                Toast.makeText(context, "Location permission is granted.", Toast.LENGTH_LONG).show()
+            }
+            else -> {
+                locationPermissionRequest.launch(
+                    arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    )
+                )
+            }
 
-        // Check if the permission for the precise/fine location is granted
-        return ContextCompat.checkSelfPermission(
-            requireContext(),
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-
+        }
     }
 
     /**
      * Request Permissions For Coarse & Fine Locations
      */
     @RequiresApi(Build.VERSION_CODES.N)
-    private val requestPermissionsForCoarseFineLocations =
-        registerForActivityResult(
-            ActivityResultContracts.RequestMultiplePermissions()
-        ) { permissions ->
-            when {
-
-                // Permission: Approximate location (ACCESS_COARSE_LOCATION)
-                permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
-                    verifyOrRequestLocationPermissions()
-                }
-
-                // Permission: Precise location (ACCESS_FINE_LOCATION)
-                permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
-                    verifyOrRequestLocationPermissions()
-                }
-
-                else -> {
-
-                    // Log: Permission denied
-                    Log.i("Permission: ", "Denied")
-
-                    // Failure Toast Message: Location permission was not granted.
-                    Toast.makeText(
-                        context,
-                        "Location permission was not granted.",
-                        Toast.LENGTH_LONG
-                    ).show()
-
+    private fun requestPermission() {
+        locationPermissionRequest =
+            registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions())
+            { permissions ->
+                when {
+                    permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
+                        enableUserLocation()
+                    }
+                    permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
+                        enableUserLocation()
+                    }
+                    else -> {
+                        Toast.makeText(
+                            context,
+                            "Location permission was not granted.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
                 }
             }
-        }
+
+        locationPermissionRequest.launch(
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        )
+    }
 
 }
