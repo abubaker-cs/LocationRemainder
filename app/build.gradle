@@ -74,7 +74,7 @@ dependencies {
     implementation "androidx.cardview:cardview:$cardVersion"
 
     // ConstraintLayout
-    implementation 'androidx.constraintlayout:constraintlayout:2.2.0-alpha04'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.0-alpha05'
 
     // GSON
     implementation 'com.google.code.gson:gson:2.10'
@@ -82,13 +82,10 @@ dependencies {
     // Architecture Components
     // Navigation dependencies
     implementation 'androidx.appcompat:appcompat:1.5.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.0-alpha05'
 
     implementation "androidx.lifecycle:lifecycle-common-java8:$archLifecycleVersion"
-    // kapt "androidx.lifecycle:lifecycle-compiler:$archLifecycleVersion"
 
-    // implementation "androidx.lifecycle:lifecycle-extensions:$archLifecycleVersion"
-    // implementation "androidx.lifecycle:lifecycle-extensions:$archLifecycleVersion"
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.0-alpha03'
 
@@ -156,9 +153,9 @@ dependencies {
 
     implementation "androidx.fragment:fragment-ktx:$fragmentVersion"
 
-    //
+    // Koin
     implementation("io.insert-koin:koin-core:3.2.2")
-    testImplementation("io.insert-koin:koin-test-junit5:3.1.6")
+    testImplementation('io.insert-koin:koin-test-junit5:3.2.2')
 
     // UI | Instrumental Testing - Mockito
     androidTestImplementation "org.mockito:mockito-core:$mockitoVersion"
@@ -175,10 +172,12 @@ dependencies {
     implementation "androidx.multidex:multidex:2.0.1"
 
     // Import the Firebase BoM
-    implementation "com.google.firebase:firebase-bom:31.1.0"
+    implementation 'com.google.firebase:firebase-bom:31.1.1'
 
     // FirebaseUI Auth
-    implementation 'com.firebaseui:firebase-ui-auth:8.0.0'
+    implementation 'com.firebaseui:firebase-ui-auth:8.0.2'
 
+    // Leak Canary
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.10'
 
 }
