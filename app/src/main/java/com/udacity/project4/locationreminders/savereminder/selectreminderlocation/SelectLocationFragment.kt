@@ -8,8 +8,11 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -21,6 +24,7 @@ import com.udacity.project4.Constants.REQUEST_LOCATION_PERMISSION
 import com.udacity.project4.Constants.TAG_LOGIN
 import com.udacity.project4.R
 import com.udacity.project4.base.BaseFragment
+import com.udacity.project4.base.NavigationCommand
 import com.udacity.project4.databinding.FragmentSelectLocationBinding
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
@@ -29,19 +33,16 @@ import java.util.*
 
 class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
-    private lateinit var locationPermissionRequest: ActivityResultLauncher<Array<String>>
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
-
     //Use Koin to get the view model of the SaveReminder
     override val _viewModel: SaveReminderViewModel by inject()
 
     private var _binding: FragmentSelectLocationBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var map: GoogleMap
+    private lateinit var locationPermissionRequest: ActivityResultLauncher<Array<String>>
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
-    private var selectedLocation: LatLng = LatLng(-33.852, 151.211)
-    private var selectedLocationDescription: String? = null
+    private lateinit var map: GoogleMap
 
     private var latitude: Double = -33.852
     private var longitude: Double = 151.211
@@ -63,12 +64,12 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         // Set the LifecycleOwner
         binding.lifecycleOwner = viewLifecycleOwner
 
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+
         setHasOptionsMenu(true)
 
         // Set the DisplayHomeAsUpEnabled to true
         setDisplayHomeAsUpEnabled(true)
-
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
         // SupportMapFragment: It is a subclass of Fragment that displays a Google map.
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -81,15 +82,29 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
          */
         mapFragment.getMapAsync(this)
 
-        // requestPermission()
+        requestPermission()
 
         // Call this function after the user confirms on the selected location
         // Set the onClickListener for the save remainder location button
         binding.onSaveButtonClicked = View.OnClickListener {
-            _viewModel.onLocationSelected(selectedLocation, selectedLocationDescription)
+            onLocationSelected()
         }
 
         return binding.root
+    }
+
+    private fun onLocationSelected() {
+
+        // Latitude and Longitude
+        _viewModel.latitude.value = latitude
+        _viewModel.longitude.value = longitude
+
+        // Location Name
+        _viewModel.reminderSelectedLocation.value = name
+
+        // Navigate back to the previous fragment
+        _viewModel.navigationCommand.value = NavigationCommand.Back
+
     }
 
 
@@ -141,7 +156,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         setMapStyle(map)
 
         // Enable the My Location layer if the fine location permission has been granted.
-        enableMyLocation()
+        // enableMyLocation()
 
     }
 
@@ -333,6 +348,76 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         }
 
         else -> super.onOptionsItemSelected(item)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    private fun requestPermission() {
+        locationPermissionRequest =
+            registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions())
+            { permissions ->
+                when {
+                    permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
+                        enableUserLocation()
+                    }
+                    permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
+                        enableUserLocation()
+                    }
+                    else -> {
+                        Toast.makeText(
+                            context,
+                            "Location permission was not granted.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            }
+
+        locationPermissionRequest.launch(
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        )
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun enableUserLocation() {
+        when {
+            (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+                    == PackageManager.PERMISSION_GRANTED) -> {
+                map.isMyLocationEnabled = true
+                getCurrentLocation()
+                Toast.makeText(context, "Location permission is granted.", Toast.LENGTH_LONG).show()
+            }
+            else -> {
+                locationPermissionRequest.launch(
+                    arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    )
+                )
+            }
+
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun getCurrentLocation() {
+        fusedLocationClient.lastLocation.addOnSuccessListener(requireActivity()) { location ->
+            // Got last known location. In some rare situations this can be null.
+            if (location != null) {
+                latitude = location.latitude
+                longitude = location.longitude
+                name = "Current Location"
+                val currentLatLng = LatLng(latitude, longitude)
+                val markerOptions = MarkerOptions().position(currentLatLng)
+                map.addMarker(markerOptions)
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15F))
+            }
+        }
     }
 
 //    ---------------------------------------------

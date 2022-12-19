@@ -44,51 +44,88 @@ class SaveReminderFragment : BaseFragment() {
     private var _binding: FragmentSaveReminderBinding? = null
     private val binding get() = _binding!!
 
+    // Geofencing Client
     private lateinit var geofencingClient: GeofencingClient
+
+    // Reminder Data Item
     private lateinit var reminder: ReminderDataItem
 
-    private val runningQOrLater = android.os.Build.VERSION.SDK_INT >=
-            android.os.Build.VERSION_CODES.Q
+    // Location Request
+    private val runningQOrLater = Build.VERSION.SDK_INT >=
+            Build.VERSION_CODES.Q
 
+
+    // onCreateView()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
+        // Inflate the layout for this fragment
         _binding = FragmentSaveReminderBinding.inflate(inflater, container, false)
 
         setDisplayHomeAsUpEnabled(true)
 
         binding.viewModel = _viewModel
+
+        // Initialize the geofencing client.
         geofencingClient = LocationServices.getGeofencingClient(requireContext())
 
         return binding.root
     }
 
+    // onViewCreated()
     @RequiresApi(Build.VERSION_CODES.S)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
         super.onViewCreated(view, savedInstanceState)
+
+        // Set viewLifecycleOwner to the viewmodel
         binding.lifecycleOwner = viewLifecycleOwner
+
+        // Button: Select Map
         binding.selectLocation.setOnClickListener {
+
             // Navigate to another fragment to get the user location
             _viewModel.navigationCommand.value =
                 NavigationCommand.To(SaveReminderFragmentDirections.actionSaveReminderFragmentToSelectLocationFragment())
+
         }
 
+        // Button: Save Reminder
         binding.saveReminder.setOnClickListener {
+
+            // Title
             val title = _viewModel.reminderTitle.value
+
+            // Description
             val description = _viewModel.reminderDescription.value
-            val location = _viewModel.reminderSelectedLocationStr.value
+
+            // Selected Location
+            val location = _viewModel.reminderSelectedLocation.value
+
+            // Geo-Coordinates
             val latitude = _viewModel.latitude.value
             val longitude = _viewModel.longitude.value
 
-            reminder = ReminderDataItem(title, description, location, latitude, longitude)
+            // Reminder Data Item
+            reminder = ReminderDataItem(
+                title,
+                description,
+                location,
+                latitude,
+                longitude
+            )
 
             if (_viewModel.validateEnteredData(reminder)) {
                 checkPermissionsAndStartGeofencing()
             }
+
         }
     }
 
+    // Activity Result
+    @Deprecated("Deprecated in Java")
     @RequiresApi(Build.VERSION_CODES.S)
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -97,6 +134,9 @@ class SaveReminderFragment : BaseFragment() {
         }
     }
 
+    /**
+     * Check permissions and start geofencing
+     */
     @RequiresApi(Build.VERSION_CODES.S)
     private fun checkPermissionsAndStartGeofencing() {
         if (foregroundAndBackgroundLocationPermissionApproved()) {
@@ -106,14 +146,21 @@ class SaveReminderFragment : BaseFragment() {
         }
     }
 
+    /**
+     * Check if the Foreground and background location permissions are approved
+     */
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun foregroundAndBackgroundLocationPermissionApproved(): Boolean {
+
+        // Foreground Permission
         val foregroundLocationApproved = (
                 PackageManager.PERMISSION_GRANTED ==
                         ActivityCompat.checkSelfPermission(
                             requireContext(),
                             Manifest.permission.ACCESS_FINE_LOCATION
                         ))
+
+        // Background Permission
         val backgroundPermissionApproved =
             if (runningQOrLater) {
                 PackageManager.PERMISSION_GRANTED ==
@@ -123,6 +170,8 @@ class SaveReminderFragment : BaseFragment() {
             } else {
                 true
             }
+
+        // Return
         return foregroundLocationApproved && backgroundPermissionApproved
     }
 

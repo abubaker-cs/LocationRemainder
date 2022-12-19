@@ -52,7 +52,7 @@ class SaveReminderViewModelTest {
         saveReminderViewModel.onClear()
         saveReminderViewModel.reminderTitle.value = null
         saveReminderViewModel.reminderDescription.value = "some description"
-        saveReminderViewModel.reminderSelectedLocationStr.value = null
+        saveReminderViewModel.reminderSelectedLocation.value = null
         saveReminderViewModel.longitude.value = 10.0
         saveReminderViewModel.latitude.value = 10.0
 
@@ -61,7 +61,7 @@ class SaveReminderViewModelTest {
             ReminderDataItem(
                 saveReminderViewModel.reminderTitle.value,
                 saveReminderViewModel.reminderDescription.value,
-                saveReminderViewModel.reminderSelectedLocationStr.value,
+                saveReminderViewModel.reminderSelectedLocation.value,
                 saveReminderViewModel.longitude.value,
                 saveReminderViewModel.latitude.value,
                 "someId"
