@@ -2,7 +2,7 @@
 
 # 📍 Location Based 🔔 Reminder
 
-### Screens 💻
+### 💻 Screens
 
 * 1 - Login via email / Google
 * 2 - Reminders list
@@ -10,7 +10,7 @@
 * 4 - Set a marker / select a POI on map
 * 5 - Reminder detail (from notification)
 
-### Highlights ✨
+### ✨ Highlights
 
 * User authentication by email & Google using Firebase Authentication and Firebase UI.
 * geofencing functionality to allow the user to make a reminder by adding title, description &
