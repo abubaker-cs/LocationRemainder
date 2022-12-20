@@ -2,7 +2,7 @@
 
 # Location Based Reminder 🔔📍
 
-### Screens 💻👨‍
+### Screens 👨💻
 
 * 1 - Login via email / Google
 * 2 - Reminders list
