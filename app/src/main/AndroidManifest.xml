@@ -84,6 +84,15 @@
             android:permission="android.permission.BIND_JOB_SERVICE"
             />
 
+        <!--
+
+        https://stackoverflow.com/questions/53849654/app-crashes-in-the-android-studio-emulator-in-maps-activity
+        -->
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false"
+            />
+
     </application>
 
 </manifest>

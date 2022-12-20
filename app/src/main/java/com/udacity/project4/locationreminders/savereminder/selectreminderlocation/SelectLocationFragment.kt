@@ -4,6 +4,8 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.content.res.Resources
+import android.graphics.Color
+import android.location.Location
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -20,6 +22,8 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import com.google.android.material.snackbar.Snackbar
+import com.udacity.project4.Constants.DEFAULT_ZOOM_LEVEL
 import com.udacity.project4.Constants.REQUEST_LOCATION_PERMISSION
 import com.udacity.project4.Constants.TAG_LOGIN
 import com.udacity.project4.R
@@ -44,9 +48,16 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     private lateinit var map: GoogleMap
 
-    private var latitude: Double = -33.852
-    private var longitude: Double = 151.211
+    // New Lahore City, Lahore - Pakistan
+    private var latitude: Double = 31.342046534659723
+    private var longitude: Double = 74.14047456871482
+
+    private val defaultLocation = LatLng(latitude, longitude)
+
+    private lateinit var lastKnownLocation: Location
+
     private var name: String = "DEFAULT"
+
 
     /**
      * Override: onCreateView()
@@ -134,7 +145,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
          * 15: Streets
          * 20: Buildings
          */
-        val zoomLevel = 15f
+        val zoomLevel = DEFAULT_ZOOM_LEVEL // 15f
 
         // Move the Camera to our custom geo-location
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLatLng, zoomLevel))
@@ -156,7 +167,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         setMapStyle(map)
 
         // Enable the My Location layer if the fine location permission has been granted.
-        // enableMyLocation()
+        enableMyLocation()
 
     }
 
@@ -205,21 +216,41 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                 userSelectedLatLng.longitude
             )
 
+            // Add a marker
             map.addMarker(
+
+                // Configurations for the new marker
                 MarkerOptions()
 
                     // Set the position of the marker
                     .position(userSelectedLatLng)
 
-                    // Title
+                    // Set the title of the marker
                     .title(getString(R.string.dropped_pin))
 
-                    // Display coordinates of the new marker
+                    // Set the snippet of the marker
                     .snippet(formatCoordinates)
 
-                    // Custom Icon color
+                    // Set the color for the marker
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
 
+            )
+
+            map.addCircle(
+
+                CircleOptions()
+
+                    // Set the center of the circle
+                    .center(userSelectedLatLng)
+
+                    // Set the radius of the circle
+                    .radius(150.0)
+
+                    // Set the stroke width of the circle
+                    .strokeColor(Color.argb(255, 0, 0, 255))
+
+                    // Set the fill color of the circle
+                    .fillColor(Color.argb(60, 0, 0, 255)).strokeWidth(5F)
             )
 
         }
@@ -249,48 +280,74 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     @SuppressLint("MissingPermission")
     private fun enableMyLocation() {
-        if (isPermissionGranted()
-        ) {
-            map.isMyLocationEnabled = true
-        } else {
-            locationPermissionRequest.launch(
-                arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                ),
-            )
-        }
-    }
 
-//    private fun enableMyLocations() {
-//        if (isPermissionGranted()) {
-//            map.isMyLocationEnabled = true
-//        } else {
-//            ActivityCompat.requestPermissions(
-//                requireContext(),
-//                arrayOf<String>(Manifest.permission.ACCESS_FINE_LOCATION),
-//                REQUEST_LOCATION_PERMISSION
-//            )
-//        }
-//    }
+        Log.d("TAG_SELECT_LOCATION ", "enableMyLocation: ")
 
-    @SuppressLint("MissingPermission")
-    private fun enableMyLocations() {
-        fusedLocationClient.lastLocation.addOnSuccessListener(requireActivity()) { location ->
+        val fusedLocationProviderClient =
+            LocationServices.getFusedLocationProviderClient(requireContext())
 
-            // Got last known location. In some rare situations this can be null.
-            if (location != null) {
-                latitude = location.latitude
-                longitude = location.longitude
-                name = "Current Location"
-                val currentLatLng = LatLng(latitude, longitude)
-                val markerOptions = MarkerOptions().position(currentLatLng)
-                map.addMarker(markerOptions)
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15F))
+        try {
+            if (isPermissionGranted()
+            ) {
+
+                // SHOW: Find My Location Button on the map
+                map.isMyLocationEnabled = true
+
+                // Get reference to the user's last known location
+                val locationResult = fusedLocationProviderClient.lastLocation
+
+                locationResult.addOnCompleteListener(requireActivity()) { task ->
+
+                    if (task.isSuccessful) {
+
+                        // Set the map's camera position to the current location of the device.
+                        if (task.result != null) {
+                            lastKnownLocation = task.result!!
+
+                            // Move the camera to the last known location with the default Zoom Level: 15
+                            map.moveCamera(
+                                CameraUpdateFactory.newLatLngZoom(
+                                    LatLng(
+                                        lastKnownLocation.latitude,
+                                        lastKnownLocation.longitude
+                                    ),
+                                    DEFAULT_ZOOM_LEVEL
+                                )
+                            )
+
+                        }
+
+                    } else {
+
+                        // Log Messages
+                        Log.d("TAG_SELECT_LOCATION", "Current location is null. Using defaults.")
+                        Log.e("TAG_SELECT_LOCATION", "Exception: %s", task.exception)
+
+                        // Move the camera to the default location with the default Zoom Level: 15
+                        map.moveCamera(
+                            CameraUpdateFactory
+                                .newLatLngZoom(defaultLocation, DEFAULT_ZOOM_LEVEL)
+                        )
+
+                        // HIDE: Find My Location Button on the map
+                        map.uiSettings.isMyLocationButtonEnabled = false
+
+                    }
+                }
+
+            } else {
+                locationPermissionRequest.launch(
+                    arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                    ),
+                )
             }
 
+        } catch (e: SecurityException) {
+            Log.e("Exception: %s", e.message, e)
         }
-    }
 
+    }
 
     private fun isPermissionGranted(): Boolean {
         return ContextCompat.checkSelfPermission(
@@ -299,22 +356,38 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        // Check if location permissions are granted and if so enable the
-        // location data layer.
-        if (requestCode == REQUEST_LOCATION_PERMISSION) {
-            if (grantResults.contains(PackageManager.PERMISSION_GRANTED)) {
-                enableMyLocation()
-            }
+
+        if (requestCode == REQUEST_LOCATION_PERMISSION && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            Log.d("<<SelectLocFrag>>", "onRequestPermissionsResult: ")
+            enableMyLocation()
+        } else {
+            Snackbar.make(
+                binding.selectLocationFragment,
+                R.string.location_required_error, Snackbar.LENGTH_INDEFINITE
+            ).setAction(android.R.string.ok) {
+                requestPermissions(
+                    arrayOf<String>(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                    REQUEST_LOCATION_PERMISSION
+                )
+            }.show()
         }
+
     }
 
     // This method is called when the menu is created.
+    @Deprecated(
+        "Deprecated in Java", ReplaceWith(
+            "inflater.inflate(R.menu.map_options, menu)",
+            "com.udacity.project4.R"
+        )
+    )
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
 
         // Inflate the Map Options Menu, this adds items to the action bar if it is present.
@@ -323,6 +396,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     }
 
     // This method is called when the user clicks on a menu item.
+    @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
 
         // Change the map type based on the user's selection.
@@ -350,25 +424,24 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         else -> super.onOptionsItemSelected(item)
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
     private fun requestPermission() {
         locationPermissionRequest =
             registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions())
             { permissions ->
-                when {
-                    permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
-                        enableUserLocation()
-                    }
-                    permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
-                        enableUserLocation()
-                    }
-                    else -> {
-                        Toast.makeText(
-                            context,
-                            "Location permission was not granted.",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
+                if (permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false)) {
+                    enableUserLocation()
+                } else if (permissions.getOrDefault(
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        false
+                    )
+                ) {
+                    enableUserLocation()
+                } else {
+                    Toast.makeText(
+                        context,
+                        "Location permission was not granted.",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
 
@@ -388,8 +461,11 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                 Manifest.permission.ACCESS_FINE_LOCATION
             )
                     == PackageManager.PERMISSION_GRANTED) -> {
+
                 map.isMyLocationEnabled = true
+
                 getCurrentLocation()
+
                 Toast.makeText(context, "Location permission is granted.", Toast.LENGTH_LONG).show()
             }
             else -> {
@@ -419,6 +495,12 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             }
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
+
 
 //    ---------------------------------------------
 
@@ -731,10 +813,5 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 //        }
 //        else -> super.onOptionsItemSelected(item)
 //    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
-    }
 
 }

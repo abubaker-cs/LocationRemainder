@@ -12,6 +12,17 @@ object Constants {
     const val TAG_SAVE = "SaveReminderFragment"
     const val SIGN_IN_RESULT_CODE = 1001
 
+    /**
+     * Zoom Levels:
+     * =====================
+     * 1: World
+     * 5: Landmass/continent
+     * 10: City
+     * 15: Streets
+     * 20: Buildings
+     */
+    const val DEFAULT_ZOOM_LEVEL = 15f
+
     // For Live-Location
     const val REQUEST_LOCATION_PERMISSION = 1
 
