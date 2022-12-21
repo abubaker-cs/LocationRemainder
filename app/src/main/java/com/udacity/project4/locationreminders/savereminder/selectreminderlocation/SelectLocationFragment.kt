@@ -45,9 +45,9 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     private val binding get() = _binding!!
 
     private lateinit var locationPermissionRequest: ActivityResultLauncher<Array<String>>
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private lateinit var map: GoogleMap
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     // New Lahore City, Lahore - Pakistan
     private var latitude: Double = 31.342046534659723
@@ -94,7 +94,11 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
          */
         mapFragment.getMapAsync(this)
 
-        requestPermission()
+        // TODO: This should be called once the
+        // Possible solution:
+        // https://www.kodeco.com/230-introduction-to-google-maps-api-for-android-with-kotlin
+        // https://stackoverflow.com/questions/69176611/request-permission-before-onmapready
+        // requestPermission()
 
         // Call this function after the user confirms on the selected location
         // Set the onClickListener for the save remainder location button
@@ -158,6 +162,9 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                 .title("Abubaker's Home")
         )
 
+        // +/- Zoom Buttons
+        map.uiSettings.isZoomControlsEnabled = true
+
         // Allow the user to create new markers on the map
         setMapLongClick(map)
 
@@ -170,6 +177,8 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         // Enable the My Location layer if the fine location permission has been granted.
         enableMyLocation()
 
+        // Get the permissions
+        // requestPermission()
     }
 
     // Load the JSON file for styling the map
@@ -501,7 +510,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         super.onDestroy()
         _binding = null
     }
-
 
 //    ---------------------------------------------
 
