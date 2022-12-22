@@ -56,7 +56,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     // Stdlib
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.20"
     implementation 'androidx.core:core-ktx:1.9.0'
 
     // App dependencies
@@ -177,7 +177,7 @@ dependencies {
     // UI | Instrumental Testing - Mockito
     androidTestImplementation "org.mockito:mockito-core:$mockitoVersion"
     androidTestImplementation "com.linkedin.dexmaker:dexmaker-mockito:$dexMakerVersion"
-    androidTestImplementation('org.koin:koin-test:2.0.1') { exclude group: 'org.mockito' }
+    // androidTestImplementation('org.koin:koin-test:2.0.1') { exclude group: 'org.mockito' }
 
     //Maps & Geofencing
     implementation 'com.google.android.gms:play-services-maps:18.1.0'
