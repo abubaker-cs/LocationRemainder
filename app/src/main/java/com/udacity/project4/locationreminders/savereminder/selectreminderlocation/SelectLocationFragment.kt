@@ -14,7 +14,6 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -59,6 +58,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     private var name: String = "DEFAULT"
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     private val callback = OnMapReadyCallback { googleMap ->
 
         /**
@@ -113,7 +113,10 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+
+        // getMapAsync() is called when the map is ready to be used.
         mapFragment?.getMapAsync(callback)
 
     }
@@ -148,6 +151,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         map = googleMap
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     private fun initializeMapWithCustomConfigurations() {
 
         // Custom Coordinates
@@ -297,6 +301,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     @SuppressLint("MissingPermission")
     private fun enableMyLocation() {
 
@@ -380,6 +385,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     @Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -449,37 +455,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
-    private fun requestPermission() {
-        locationPermissionRequest =
-            registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions())
-
-            { permissions ->
-                if (permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false)) {
-                    enableUserLocation()
-                } else if (permissions.getOrDefault(
-                        Manifest.permission.ACCESS_COARSE_LOCATION,
-                        false
-                    )
-                ) {
-                    enableUserLocation()
-                } else {
-                    Toast.makeText(
-                        context,
-                        "Location permission was not granted.",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
-
-        requestPermissionLauncher.launch(
-            arrayOf(
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            )
-        )
-    }
-
-    @RequiresApi(Build.VERSION_CODES.Q)
     val requestPermissionLauncher =
         registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
@@ -503,55 +478,87 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             }
         }
 
-    @SuppressLint("MissingPermission")
-    private fun enableUserLocation() {
-
-
-        when {
-            (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            )
-                    == PackageManager.PERMISSION_GRANTED) -> {
-
-                map.isMyLocationEnabled = true
-
-                getCurrentLocation()
-
-                Toast.makeText(context, "Location permission is granted.", Toast.LENGTH_LONG).show()
-            }
-            else -> {
-                locationPermissionRequest.launch(
-                    arrayOf(
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    )
-                )
-            }
-
-        }
-    }
-
-    @SuppressLint("MissingPermission")
-    private fun getCurrentLocation() {
-        fusedLocationClient.lastLocation.addOnSuccessListener(requireActivity()) { location ->
-            // Got last known location. In some rare situations this can be null.
-            if (location != null) {
-                latitude = location.latitude
-                longitude = location.longitude
-                name = "Current Location"
-                val currentLatLng = LatLng(latitude, longitude)
-                val markerOptions = MarkerOptions().position(currentLatLng)
-                map.addMarker(markerOptions)
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15F))
-            }
-        }
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
     }
+
+
+//    @RequiresApi(Build.VERSION_CODES.Q)
+//    private fun requestPermission() {
+//        locationPermissionRequest =
+//            registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions())
+//
+//            { permissions ->
+//                if (permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false)) {
+//                    enableUserLocation()
+//                } else if (permissions.getOrDefault(
+//                        Manifest.permission.ACCESS_COARSE_LOCATION,
+//                        false
+//                    )
+//                ) {
+//                    enableUserLocation()
+//                } else {
+//                    Toast.makeText(
+//                        context,
+//                        "Location permission was not granted.",
+//                        Toast.LENGTH_LONG
+//                    ).show()
+//                }
+//            }
+//
+//        requestPermissionLauncher.launch(
+//            arrayOf(
+//                Manifest.permission.ACCESS_FINE_LOCATION,
+//                Manifest.permission.ACCESS_COARSE_LOCATION
+//            )
+//        )
+//    }
+
+//    @SuppressLint("MissingPermission")
+//    private fun enableUserLocation() {
+//
+//
+//        when {
+//            (ActivityCompat.checkSelfPermission(
+//                requireContext(),
+//                Manifest.permission.ACCESS_FINE_LOCATION
+//            )
+//                    == PackageManager.PERMISSION_GRANTED) -> {
+//
+//                map.isMyLocationEnabled = true
+//
+//                getCurrentLocation()
+//
+//                Toast.makeText(context, "Location permission is granted.", Toast.LENGTH_LONG).show()
+//            }
+//            else -> {
+//                locationPermissionRequest.launch(
+//                    arrayOf(
+//                        Manifest.permission.ACCESS_FINE_LOCATION,
+//                        Manifest.permission.ACCESS_COARSE_LOCATION
+//                    )
+//                )
+//            }
+//
+//        }
+//    }
+
+//    @SuppressLint("MissingPermission")
+//    private fun getCurrentLocation() {
+//        fusedLocationClient.lastLocation.addOnSuccessListener(requireActivity()) { location ->
+//            // Got last known location. In some rare situations this can be null.
+//            if (location != null) {
+//                latitude = location.latitude
+//                longitude = location.longitude
+//                name = "Current Location"
+//                val currentLatLng = LatLng(latitude, longitude)
+//                val markerOptions = MarkerOptions().position(currentLatLng)
+//                map.addMarker(markerOptions)
+//                map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15F))
+//            }
+//        }
+//    }
 
 //    ---------------------------------------------
 
