@@ -1,11 +1,13 @@
 package com.udacity.project4.locationreminders.reminderslist
 
+import androidx.room.Entity
 import java.io.Serializable
 import java.util.*
 
 /**
  * data class acts as a data mapper between the DB and the UI
  */
+@Entity(tableName = "saved_reminders")
 data class ReminderDataItem(
 
     // Title
@@ -24,4 +26,17 @@ data class ReminderDataItem(
     // ID
     val id: String = UUID.randomUUID().toString()
 
-) : Serializable
+) : Serializable {
+
+    val savedLocation: String
+        get() {
+
+            if (location != null) {
+                return location as String
+            }
+
+            return "Lat: $latitude Lon: $longitude"
+
+        }
+
+}

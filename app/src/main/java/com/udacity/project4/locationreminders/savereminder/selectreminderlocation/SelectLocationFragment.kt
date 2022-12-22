@@ -59,6 +59,24 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     private var name: String = "DEFAULT"
 
+    private val callback = OnMapReadyCallback { googleMap ->
+
+        /**
+         * Manipulates the map once available.
+         * This callback is triggered when the map is ready to be used.
+         * This is where we can add markers or lines, add listeners or move the camera.
+         * In this case, we just add a marker near Sydney, Australia.
+         * If Google Play services is not installed on the device, the user will be prompted to
+         * install it inside the SupportMapFragment. This method will only be triggered once the
+         * user has installed Google Play services and returned to the app.
+         */
+
+        map = googleMap
+
+        initializeMapWithCustomConfigurations()
+
+    }
+
 
     /**
      * Override: onCreateView()
@@ -83,23 +101,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         // Set the DisplayHomeAsUpEnabled to true
         setDisplayHomeAsUpEnabled(true)
 
-        // SupportMapFragment: It is a subclass of Fragment that displays a Google map.
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        val mapFragment =
-            childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
-
-        /**
-         * A GoogleMap must be acquired using getMapAsync(OnMapReadyCallback).
-         * This class automatically initializes the maps system and the view.
-         */
-        mapFragment.getMapAsync(this)
-
-        // TODO: This should be called once the
-        // Possible solution:
-        // https://www.kodeco.com/230-introduction-to-google-maps-api-for-android-with-kotlin
-        // https://stackoverflow.com/questions/69176611/request-permission-before-onmapready
-        // requestPermission()
-
         // Call this function after the user confirms on the selected location
         // Set the onClickListener for the save remainder location button
         binding.onSaveButtonClicked = View.OnClickListener {
@@ -107,6 +108,14 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         }
 
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+        mapFragment?.getMapAsync(callback)
+
     }
 
     private fun onLocationSelected() {
@@ -137,6 +146,9 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
      */
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
+    }
+
+    private fun initializeMapWithCustomConfigurations() {
 
         // Custom Coordinates
         val latitude = 31.34201831781176
@@ -176,9 +188,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
         // Enable the My Location layer if the fine location permission has been granted.
         enableMyLocation()
-
-        // Get the permissions
-        // requestPermission()
     }
 
     // Load the JSON file for styling the map
@@ -346,6 +355,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                 }
 
             } else {
+
                 locationPermissionRequest.launch(
                     arrayOf(
                         Manifest.permission.ACCESS_FINE_LOCATION,
@@ -437,6 +447,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     private fun requestPermission() {
         locationPermissionRequest =
             registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions())
+
             { permissions ->
                 if (permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false)) {
                     enableUserLocation()
@@ -465,6 +476,8 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     @SuppressLint("MissingPermission")
     private fun enableUserLocation() {
+
+
         when {
             (ActivityCompat.checkSelfPermission(
                 requireContext(),

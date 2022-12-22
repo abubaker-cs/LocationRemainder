@@ -31,13 +31,12 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
                 intent
             )
         }
+
     }
 
     override fun onHandleWork(intent: Intent) {
-        //TO DO: handle the geofencing transition events and send a notification to the user when he enters the geofence area
-        //TO DO call @sendNotification
 
-        // Get the geofencing event from the intent
+
         val geofencingEvent = GeofencingEvent.fromIntent(intent)
 
         if (geofencingEvent != null) {
@@ -55,7 +54,6 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
 
     }
 
-    //TO DO: get the request id of the current geofence
     private fun sendNotification(triggeringGeofences: List<Geofence>) {
 
         triggeringGeofences.forEach {
