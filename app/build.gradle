@@ -154,8 +154,14 @@ dependencies {
     implementation "androidx.fragment:fragment-ktx:$fragmentVersion"
 
     // Koin
-    implementation("io.insert-koin:koin-core:3.2.2")
+    implementation("io.insert-koin:koin-core:$koinVersion")
     testImplementation('io.insert-koin:koin-test-junit5:3.2.2')
+
+    // Koin Test features
+    testImplementation "io.insert-koin:koin-test:$koinVersion"
+
+    // Koin for JUnit 4
+    testImplementation "io.insert-koin:koin-test-junit4:$koinVersion"
 
     // UI | Instrumental Testing - Mockito
     androidTestImplementation "org.mockito:mockito-core:$mockitoVersion"

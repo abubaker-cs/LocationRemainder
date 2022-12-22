@@ -34,6 +34,7 @@ class ReminderListFragment : BaseFragment() {
         // Set the view model for databinding - this allows the bound layout access to all the data in the ViewModel
         binding.viewModel = _viewModel
 
+        @Suppress("DEPRECATION")
         setHasOptionsMenu(true)
 
         setDisplayHomeAsUpEnabled(false)
@@ -92,6 +93,8 @@ class ReminderListFragment : BaseFragment() {
     }
 
     // Add the menu to the app bar
+    @Suppress("DEPRECATION")
+    @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         // If the user clicks the logout menu item, then log them out
@@ -108,6 +111,8 @@ class ReminderListFragment : BaseFragment() {
 
     }
 
+    @Suppress("DEPRECATION")
+    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
 
         super.onCreateOptionsMenu(menu, inflater)

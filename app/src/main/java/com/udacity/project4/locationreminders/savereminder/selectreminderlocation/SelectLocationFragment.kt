@@ -77,7 +77,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     }
 
-
     /**
      * Override: onCreateView()
      */
@@ -110,13 +109,16 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         return binding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
+        // A Map component in an app. This fragment is the simplest way to place a map in an application.
+        // It's a wrapper around a view of a map to automatically handle the necessary life cycle needs.
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
 
-        // getMapAsync() is called when the map is ready to be used.
+        // A GoogleMap must be acquired using getMapAsync(OnMapReadyCallback).
+        // This class automatically initializes the maps system and the view.
         mapFragment?.getMapAsync(callback)
 
     }

@@ -133,17 +133,24 @@ class ReminderListFragmentTest {
             launchFragmentInContainer<ReminderListFragment>(Bundle(), R.style.AppTheme)
 
             // THEN - the reminder is displayed
-            onView(ViewMatchers.withText(reminder1.title)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+            onView(ViewMatchers.withText(reminder1.title)).check(
+                ViewAssertions.matches(
+                    ViewMatchers.isDisplayed()
+                )
+            )
+
             onView(ViewMatchers.withText(reminder1.description)).check(
                 ViewAssertions.matches(
                     ViewMatchers.isDisplayed()
                 )
             )
+
             onView(ViewMatchers.withText(reminder1.location)).check(
                 ViewAssertions.matches(
                     ViewMatchers.isDisplayed()
                 )
             )
+
         }
     }
 }

@@ -5,7 +5,6 @@ import android.app.Activity
 import android.app.Application
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions
@@ -86,7 +85,7 @@ class RemindersActivityTest : AutoCloseKoinTest() {
 
         //Get our real repository
         // TODO repository = get()
-        repository = RemindersLocalRepository(get())
+        repository = get()
 
         //clear the data to start fresh
         runBlocking {
@@ -179,14 +178,12 @@ class RemindersActivityTest : AutoCloseKoinTest() {
 
         Thread.sleep(3000)
 
-        onView(
-            withId(R.id.save_button).perform(ViewActions.click())
+        onView(withId(R.id.save_button)).perform(ViewActions.click())
+        onView(withId(R.id.saveReminder)).perform(ViewActions.click())
 
-                    Espresso . onView (ViewMatchers.withId(R.id.saveReminder)).perform(ViewActions.click())
-
-                    Espresso . onView (ViewMatchers.withId(com.google.android.material.R.id.snackbar_text))
-                .check(ViewAssertions.matches(withText(R.string.save_reminder_error_desc)))
-                    activityScenario . close ()
+        onView(withId(com.google.android.material.R.id.snackbar_text))
+            .check(ViewAssertions.matches(withText(R.string.save_reminder_error_desc)))
+        activityScenario.close()
     }
 
 }

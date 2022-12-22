@@ -280,6 +280,7 @@ class SaveReminderFragment : BaseFragment() {
         )
     }
 
+    @Deprecated("Deprecated in Java")
     @RequiresApi(Build.VERSION_CODES.S)
     override fun onRequestPermissionsResult(
         requestCode: Int,

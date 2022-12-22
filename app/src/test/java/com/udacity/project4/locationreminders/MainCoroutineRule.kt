@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.udacity.project4.locationreminders
 
 import kotlinx.coroutines.Dispatchers
@@ -7,7 +9,7 @@ import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 
 @ExperimentalCoroutinesApi
-class MainCoroutineRule(val dispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()) :
+class MainCoroutineRule(private val dispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()) :
     TestWatcher(),
     TestCoroutineScope by createTestCoroutineScope(TestCoroutineDispatcher() + TestCoroutineExceptionHandler() + dispatcher) {
     override fun starting(description: Description) {

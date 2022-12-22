@@ -75,6 +75,7 @@ class RemindersLocalRepositoryTest {
         remindersDatabase.reminderDao().saveReminder(reminder1)
         remindersDatabase.reminderDao().saveReminder(reminder2)
         remindersDatabase.reminderDao().saveReminder(reminder3)
+
         val remindersList = listOf(reminder1, reminder2, reminder3).sortedBy { it.id }
 
         // WHEN - Get all the reminders from the database
