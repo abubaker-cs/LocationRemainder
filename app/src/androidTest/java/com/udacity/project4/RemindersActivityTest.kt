@@ -84,7 +84,6 @@ class RemindersActivityTest : KoinTest {
         }
 
         //Get our real repository
-        // TODO repository = get()
         val repository: ReminderDataSource by inject()
 
         //clear the data to start fresh
