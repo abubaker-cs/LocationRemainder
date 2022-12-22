@@ -1,6 +1,5 @@
 package com.udacity.project4
 
-
 import android.app.Activity
 import android.app.Application
 import androidx.test.core.app.ActivityScenario
@@ -10,7 +9,6 @@ import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.RootMatchers
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
@@ -33,12 +31,14 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
+import org.koin.test.KoinTest
+import org.koin.test.inject
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 // END TO END test to black box test the app
-// Extended Koin Test - embed autoclose @after method to close Koin after every test
-class RemindersActivityTest : AutoCloseKoinTest() {
+// Extended Koin Test - embed auto close @after method to close Koin after every test
+class RemindersActivityTest : KoinTest {
 
     // TODO: Replace AutoCloseKoinTest with KoinTest
     // https://knowledge.udacity.com/questions/860706
@@ -61,7 +61,9 @@ class RemindersActivityTest : AutoCloseKoinTest() {
     @Before
     fun init() {
         stopKoin()//stop the original app koin
+
         appContext = getApplicationContext()
+
         val myModule = module {
             viewModel {
                 RemindersListViewModel(
@@ -78,6 +80,7 @@ class RemindersActivityTest : AutoCloseKoinTest() {
             single { RemindersLocalRepository(get()) }
             single { LocalDB.createRemindersDao(appContext) }
         }
+
         //declare a new koin module
         startKoin {
             modules(listOf(myModule))
@@ -85,14 +88,13 @@ class RemindersActivityTest : AutoCloseKoinTest() {
 
         //Get our real repository
         // TODO repository = get()
-        repository = get()
+        val repository: ReminderDataSource by inject()
 
         //clear the data to start fresh
         runBlocking {
             repository.deleteAllReminders()
         }
     }
-
 
     @After
     fun unregisterIdlingResource() = runBlocking {
@@ -102,17 +104,18 @@ class RemindersActivityTest : AutoCloseKoinTest() {
     }
 
     @Test
-    fun remindersScreen_clickOnFab_opensSaveReminderScreen() = runBlocking {
+    fun addNewReminder_ListUpdatedWithNewReminder() = runBlocking {
+
         // start the reminders screen
         val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
 
         // click on the FAB add reminder
-        onView(ViewMatchers.withId(R.id.addReminderFAB)).perform(ViewActions.click())
+        onView(withId(R.id.addReminderFAB)).perform(ViewActions.click())
 
         // check that we are on the SaveReminder screen
-        onView(ViewMatchers.withId(R.id.reminderTitle))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        onView(withId(R.id.reminderTitle))
+            .check(ViewAssertions.matches(isDisplayed()))
 
         // Make sure the activity is closed before resetting the db:
         activityScenario.close()
@@ -124,23 +127,26 @@ class RemindersActivityTest : AutoCloseKoinTest() {
         val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
 
-        onView(ViewMatchers.withId(R.id.addReminderFAB)).perform(ViewActions.click())
-        onView(ViewMatchers.withId(R.id.reminderTitle))
+        onView(withId(R.id.addReminderFAB)).perform(ViewActions.click())
+
+        onView(withId(R.id.reminderTitle))
             .perform(ViewActions.replaceText("Test Title"))
-        onView(ViewMatchers.withId(R.id.reminderDescription))
+
+        onView(withId(R.id.reminderDescription))
             .perform(ViewActions.replaceText("Test Description"))
 
         Thread.sleep(1000)
 
-        onView(ViewMatchers.withId(R.id.selectLocation)).perform(ViewActions.click())
+        onView(withId(R.id.selectLocation)).perform(ViewActions.click())
         onView(withId(R.id.map)).perform(ViewActions.click())
 
         Thread.sleep(3000)
 
         onView(withId(R.id.save_button)).perform(ViewActions.click())
-        onView(ViewMatchers.withId(R.id.saveReminder)).perform(ViewActions.click())
 
-        onView(ViewMatchers.withText(R.string.reminder_saved)).inRoot(
+        onView(withId(R.id.saveReminder)).perform(ViewActions.click())
+
+        onView(withText(R.string.reminder_saved)).inRoot(
             RootMatchers.withDecorView(
                 CoreMatchers.not(
                     Is.`is`(
@@ -148,7 +154,7 @@ class RemindersActivityTest : AutoCloseKoinTest() {
                     )
                 )
             )
-        ).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        ).check(ViewAssertions.matches(isDisplayed()))
 
         activityScenario.close()
     }
@@ -167,13 +173,13 @@ class RemindersActivityTest : AutoCloseKoinTest() {
         val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
 
-        onView(ViewMatchers.withId(R.id.addReminderFAB)).perform(ViewActions.click())
-        onView(ViewMatchers.withId(R.id.reminderDescription))
+        onView(withId(R.id.addReminderFAB)).perform(ViewActions.click())
+        onView(withId(R.id.reminderDescription))
             .perform(ViewActions.replaceText("Test Description"))
 
         Thread.sleep(1000)
 
-        onView(ViewMatchers.withId(R.id.selectLocation)).perform(ViewActions.click())
+        onView(withId(R.id.selectLocation)).perform(ViewActions.click())
         onView(withId(R.id.map)).perform(ViewActions.click())
 
         Thread.sleep(3000)

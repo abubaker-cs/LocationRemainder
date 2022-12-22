@@ -147,6 +147,21 @@ dependencies {
     androidTestImplementation "androidx.test.espresso.idling:idling-concurrent:$espressoVersion"
     androidTestImplementation "junit:junit:$junitVersion"
 
+    // AndroidX Test - Instrumented testing
+    androidTestImplementation "androidx.test:core-ktx:$androidXTestCoreVersion"
+    androidTestImplementation "androidx.test.ext:junit-ktx:$androidXTestExtKotlinRunnerVersion"
+    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
+    androidTestImplementation "androidx.test:rules:$androidXTestRulesVersion"
+    androidTestImplementation "androidx.room:room-testing:$roomVersion"
+    androidTestImplementation "androidx.arch.core:core-testing:$archTestingVersion"
+    androidTestImplementation "org.robolectric:annotations:$robolectricVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-intents:$espressoVersion"
+    androidTestImplementation "androidx.test.espresso.idling:idling-concurrent:$espressoVersion"
+    androidTestImplementation "io.insert-koin:koin-test:$koinVersion"
+    androidTestImplementation "junit:junit:$junitVersion"
+
     // Once https://issuetracker.google.com/127986458 is fixed this can be testImplementation
     debugImplementation "androidx.fragment:fragment-testing:$fragmentVersion"
     implementation "androidx.test:core:$androidXTestCoreVersion"
@@ -154,14 +169,10 @@ dependencies {
     implementation "androidx.fragment:fragment-ktx:$fragmentVersion"
 
     // Koin
-    implementation("io.insert-koin:koin-core:$koinVersion")
-    testImplementation('io.insert-koin:koin-test-junit5:3.2.2')
+    implementation "io.insert-koin:koin-android:$koinVersion"
+    implementation "io.insert-koin:koin-android-compat:$koinVersion"
+    implementation "io.insert-koin:koin-androidx-navigation:$koinVersion"
 
-    // Koin Test features
-    testImplementation "io.insert-koin:koin-test:$koinVersion"
-
-    // Koin for JUnit 4
-    testImplementation "io.insert-koin:koin-test-junit4:$koinVersion"
 
     // UI | Instrumental Testing - Mockito
     androidTestImplementation "org.mockito:mockito-core:$mockitoVersion"
@@ -171,20 +182,6 @@ dependencies {
     //Maps & Geofencing
     implementation 'com.google.android.gms:play-services-maps:18.1.0'
     implementation 'com.google.android.gms:play-services-location:21.0.1'
-
-    /**
-     * Maps KTX
-     * https://developers.google.com/codelabs/maps-platform/maps-platform-101-android#10
-     */
-
-    // Maps SDK for Android KTX Library
-    // implementation 'com.google.maps.android:maps-ktx:3.0.0'
-
-    // Maps SDK for Android Utility Library KTX Library
-    // implementation 'com.google.maps.android:maps-utils-ktx:3.4.0'
-
-    // Lifecycle Runtime KTX Library
-    // implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'
 
     // Multidex
     implementation "androidx.multidex:multidex:2.0.1"
