@@ -44,6 +44,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     private var _binding: FragmentSelectLocationBinding? = null
     private val binding get() = _binding!!
 
+    // TODO check if it is redundant
     private lateinit var locationPermissionRequest: ActivityResultLauncher<Array<String>>
 
     private lateinit var map: GoogleMap
@@ -52,7 +53,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     // New Lahore City, Lahore - Pakistan
     private var latitude: Double = 31.342046534659723
     private var longitude: Double = 74.14047456871482
-
     private val defaultLocation = LatLng(latitude, longitude)
 
     private lateinit var lastKnownLocation: Location
@@ -356,11 +356,15 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
             } else {
 
-                locationPermissionRequest.launch(
+                // locationPermissionRequest
+                requestPermissionLauncher.launch(
                     arrayOf(
                         Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
                     ),
                 )
+
+
             }
 
         } catch (e: SecurityException) {
@@ -444,6 +448,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         else -> super.onOptionsItemSelected(item)
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     private fun requestPermission() {
         locationPermissionRequest =
             registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions())
@@ -466,13 +471,37 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                 }
             }
 
-        locationPermissionRequest.launch(
+        requestPermissionLauncher.launch(
             arrayOf(
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             )
         )
     }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    val requestPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { permissions ->
+            when {
+                permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
+                    enableMyLocation()
+                }
+                permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
+                    enableMyLocation()
+                }
+
+                else -> {
+                    Log.i("Permission: ", "Denied")
+                    Toast.makeText(
+                        context,
+                        "Location permission was not granted.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+        }
 
     @SuppressLint("MissingPermission")
     private fun enableUserLocation() {
