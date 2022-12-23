@@ -35,7 +35,6 @@ import org.koin.test.KoinTest
 import org.koin.test.inject
 
 // END TO END test to black box test the app
-// Extended Koin Test - embed auto close @after method to close Koin after every test
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class RemindersActivityTest : KoinTest {
@@ -57,7 +56,9 @@ class RemindersActivityTest : KoinTest {
 
     @Before
     fun init() {
-        stopKoin()//stop the original app koin
+
+        //stop the original app koin
+        stopKoin()
 
         appContext = getApplicationContext()
 
@@ -92,6 +93,10 @@ class RemindersActivityTest : KoinTest {
         }
     }
 
+    /**
+     * ----------------------------------- Comments below
+     */
+
     @After
     fun unregisterIdlingResource() = runBlocking {
         IdlingRegistry.getInstance().unregister(dataBindingIdlingResource)
@@ -100,7 +105,7 @@ class RemindersActivityTest : KoinTest {
     }
 
     @Test
-    fun addNewReminder_ListUpdatedWithNewReminder() = runBlocking {
+    fun add_new_reminder() = runBlocking {
 
         // start the reminders screen
         val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
@@ -118,7 +123,7 @@ class RemindersActivityTest : KoinTest {
     }
 
     @Test
-    fun reminder_Location_Activity_show_toast_message() {
+    fun show_toast_message() {
 
         val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
@@ -155,16 +160,8 @@ class RemindersActivityTest : KoinTest {
         activityScenario.close()
     }
 
-    private fun getActivity(activityScenario: ActivityScenario<RemindersActivity>): Activity? {
-        var activity: Activity? = null
-        activityScenario.onActivity {
-            activity = it
-        }
-        return activity
-    }
-
     @Test
-    fun reminder_Location_Activity_show_Snackbar_message() {
+    fun show_Snackbar_message() {
 
         val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
@@ -186,6 +183,17 @@ class RemindersActivityTest : KoinTest {
         onView(withId(com.google.android.material.R.id.snackbar_text))
             .check(ViewAssertions.matches(withText(R.string.save_reminder_error_desc)))
         activityScenario.close()
+    }
+
+    /**
+     * getActivity()
+     */
+    private fun getActivity(activityScenario: ActivityScenario<RemindersActivity>): Activity? {
+        var activity: Activity? = null
+        activityScenario.onActivity {
+            activity = it
+        }
+        return activity
     }
 
 }

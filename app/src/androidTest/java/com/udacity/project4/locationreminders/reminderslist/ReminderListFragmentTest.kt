@@ -35,10 +35,10 @@ import org.koin.dsl.module
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
 
+//Medium Test to test the ReminderListFragment
+@MediumTest
 @RunWith(AndroidJUnit4::class)
 @ExperimentalCoroutinesApi
-//UI Testing
-@MediumTest
 class ReminderListFragmentTest {
 
     // DONE: test the navigation of the fragments.

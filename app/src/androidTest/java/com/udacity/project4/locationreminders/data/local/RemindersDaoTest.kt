@@ -17,9 +17,10 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+// Small Test to test the RemindersDao
+@SmallTest
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
-@SmallTest
 class RemindersDaoTest {
 
     // DONE: Add testing implementation to the RemindersDao.kt

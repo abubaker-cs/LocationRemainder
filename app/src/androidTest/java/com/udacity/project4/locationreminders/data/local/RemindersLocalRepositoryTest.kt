@@ -15,10 +15,10 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
+//Medium Test to test the RemindersLocalRepository
+@MediumTest
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
-//Medium Test to test the repository
-@MediumTest
 class RemindersLocalRepositoryTest {
 
     // DONE: Add testing implementation to the RemindersLocalRepository.kt
