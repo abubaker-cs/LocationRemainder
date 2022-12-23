@@ -46,9 +46,7 @@ class FakeDataSource : ReminderDataSource {
     override suspend fun getReminders(): Result<List<ReminderDTO>> {
 
         // If an error has been found while retrieving the reminders, then return an error message
-        if (shouldReturnError) {
-            return Result.Error("Test exception")
-        }
+        if (shouldReturnError) return Result.Error("Could not find reminders")
 
         // Otherwise, return the list of reminders
         return Result.Success(reminders.values.toList())

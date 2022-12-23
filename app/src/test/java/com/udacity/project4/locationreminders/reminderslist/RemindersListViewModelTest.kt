@@ -9,7 +9,9 @@ import com.udacity.project4.locationreminders.getOrAwaitValue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.DelayController
 import kotlinx.coroutines.test.runBlockingTest
+import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.nullValue
+import org.hamcrest.MatcherAssert
 import org.hamcrest.core.Is.`is`
 import org.hamcrest.core.IsNot.not
 import org.junit.Assert.assertThat
@@ -64,23 +66,27 @@ class RemindersListViewModelTest {
     }
 
     @Test
-    fun loadReminders_loading() {
+    fun check_loading() {
 
-        // GIVEN - we are loading reminders
+        // PAUSE DISPATCHER - pauseDispatcher() pauses the execution of coroutines
         (mainCoroutineRule.coroutineContext[ContinuationInterceptor]!! as DelayController).pauseDispatcher()
+
+        // GIVEN - We are loading the list of reminders
         remindersListViewModel.loadReminders()
 
-        // WHEN - the dispatcher is paused, showLoading is true
+        // WHEN - Since we have already paused the dispatcher, the loading indicator should be true
         assertThat(remindersListViewModel.showLoading.getOrAwaitValue(), `is`(true))
+
+        // RESUME DISPATCHER - resumeDispatcher() resumes the execution of coroutines
         mainCoroutineRule.resumeDispatcher()
 
-        // THEN - when the dispatcher is resumed, showloading is false
+        // Then - Since we have resumed the dispatcher, thus the loading indicator should be false
         assertThat(remindersListViewModel.showLoading.getOrAwaitValue(), `is`(false))
 
     }
 
     @Test
-    fun shouldReturnError_returnException() = runBlockingTest {
+    fun shouldReturnError() = runBlockingTest {
 
         // Delete all reminders from the fake dataSource
         dataSource.deleteAllReminders()
@@ -96,6 +102,22 @@ class RemindersListViewModelTest {
         val actual =
             remindersListViewModel.showSnackBar.getOrAwaitValue() == "Couldn't retrieve reminders"
         assertThat(actual, not(nullValue()))
+    }
+
+    @Test
+    fun reminders_isEmpty() = runBlockingTest {
+
+        // Delete all reminders from the fake dataSource
+        dataSource.deleteAllReminders()
+
+        // Load reminders from the fake dataSource
+        remindersListViewModel.loadReminders()
+
+        val actual = remindersListViewModel.showNoData.value
+
+        // Check that the showNoData value is true
+        MatcherAssert.assertThat(actual, CoreMatchers.`is`(true))
+
     }
 
 }
