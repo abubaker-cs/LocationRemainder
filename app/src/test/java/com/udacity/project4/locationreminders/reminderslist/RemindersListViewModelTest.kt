@@ -8,6 +8,7 @@ import com.udacity.project4.locationreminders.data.FakeDataSource
 import com.udacity.project4.locationreminders.getOrAwaitValue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.DelayController
+import kotlinx.coroutines.test.resumeDispatcher
 import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.nullValue
