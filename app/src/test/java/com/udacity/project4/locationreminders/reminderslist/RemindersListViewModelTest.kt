@@ -27,11 +27,11 @@ import kotlin.coroutines.ContinuationInterceptor
 @ExperimentalCoroutinesApi
 class RemindersListViewModelTest {
 
-    // Subject under test
-    private lateinit var remindersListViewModel: RemindersListViewModel
-
     // Our fake dataSource will be used to inject data into the RemindersListViewModel
     private lateinit var dataSource: FakeDataSource
+
+    // Subject under test: RemindersListViewModel
+    private lateinit var viewModel: RemindersListViewModel
 
     // Executes each task synchronously using Architecture Components.
     @get:Rule
@@ -54,7 +54,7 @@ class RemindersListViewModelTest {
         dataSource = FakeDataSource()
 
         // Create a new instance of the RemindersListViewModel
-        remindersListViewModel = RemindersListViewModel(
+        viewModel = RemindersListViewModel(
 
             // Pass the application context
             ApplicationProvider.getApplicationContext(),
@@ -73,16 +73,16 @@ class RemindersListViewModelTest {
         (mainCoroutineRule.coroutineContext[ContinuationInterceptor]!! as DelayController).pauseDispatcher()
 
         // GIVEN - We are loading the list of reminders
-        remindersListViewModel.loadReminders()
+        viewModel.loadReminders()
 
         // WHEN - Since we have already paused the dispatcher, the loading indicator should be true
-        assertThat(remindersListViewModel.showLoading.getOrAwaitValue(), `is`(true))
+        assertThat(viewModel.showLoading.getOrAwaitValue(), `is`(true))
 
         // RESUME DISPATCHER - resumeDispatcher() resumes the execution of coroutines
         mainCoroutineRule.resumeDispatcher()
 
         // Then - Since we have resumed the dispatcher, thus the loading indicator should be false
-        assertThat(remindersListViewModel.showLoading.getOrAwaitValue(), `is`(false))
+        assertThat(viewModel.showLoading.getOrAwaitValue(), `is`(false))
 
     }
 
@@ -98,11 +98,11 @@ class RemindersListViewModelTest {
         dataSource.setReturnError(true)
 
         // WHEN - Try to load all reminders from the fake dataSource
-        remindersListViewModel.loadReminders()
+        viewModel.loadReminders()
 
         // THEN - Display the error in the snackbar: "Couldn't retrieve reminders"
         val actual =
-            remindersListViewModel.showSnackBar.getOrAwaitValue() == "Couldn't retrieve reminders"
+            viewModel.showSnackBar.getOrAwaitValue() == "Couldn't retrieve reminders"
         assertThat(actual, not(nullValue()))
     }
 
@@ -113,9 +113,9 @@ class RemindersListViewModelTest {
         dataSource.deleteAllReminders()
 
         // Load reminders from the fake dataSource
-        remindersListViewModel.loadReminders()
+        viewModel.loadReminders()
 
-        val actual = remindersListViewModel.showNoData.value
+        val actual = viewModel.showNoData.value
 
         // Check that the showNoData value is true
         MatcherAssert.assertThat(actual, CoreMatchers.`is`(true))

@@ -1,6 +1,5 @@
 package com.udacity.project4.locationreminders.savereminder
 
-import android.app.Application
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -15,14 +14,17 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.core.context.stopKoin
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class SaveReminderViewModelTest {
 
+    // Our fake dataSource will be used to inject data into the SaveReminderViewModelTest
+    private lateinit var dataSource: FakeDataSource
 
-    //DONE: provide testing to the SaveReminderView and its live data objects
-    //COMPLETE: provide testing to the SaveReminderView and its live data objects
+    // Subject under test: SaveReminderViewModelTest
+    private lateinit var viewModel: SaveReminderViewModel
 
     // Executes each task synchronously using Architecture Components.
     @get:Rule
@@ -32,39 +34,50 @@ class SaveReminderViewModelTest {
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
 
-    // Subject under test
-    private lateinit var saveReminderViewModel: SaveReminderViewModel
-
-    // Use a fake repository to be injected into the view model.
-    private lateinit var remindersLocalRepository: FakeDataSource
-
+    /**
+     * setupViewModel() is called before each test.
+     */
     @Before
     fun setupViewModel() {
-        // Initialise the repository with no reminders.
-        remindersLocalRepository = FakeDataSource()
-        val appContext = ApplicationProvider.getApplicationContext() as Application
-        saveReminderViewModel = SaveReminderViewModel(appContext, remindersLocalRepository)
+
+        // Stop Koin before each test
+        stopKoin()
+
+        // Create a new instance of the fake dataSource
+        dataSource = FakeDataSource()
+
+        // Create a new instance of the SaveReminderViewModelTest
+        viewModel = SaveReminderViewModel(
+
+            // Pass the application context
+            ApplicationProvider.getApplicationContext(),
+
+            // Pass the fake dataSource
+            dataSource
+
+        )
+
     }
 
     @Test
     fun whenIncompleteInfo_validationReturnsNull() {
 
         // GIVEN - incomplete reminder fields, title is null
-        saveReminderViewModel.onClear()
-        saveReminderViewModel.reminderTitle.value = null
-        saveReminderViewModel.reminderDescription.value = "some description"
-        saveReminderViewModel.reminderSelectedLocation.value = null
-        saveReminderViewModel.longitude.value = 10.0
-        saveReminderViewModel.latitude.value = 10.0
+        viewModel.onClear()
+        viewModel.reminderTitle.value = null
+        viewModel.reminderDescription.value = "some description"
+        viewModel.reminderSelectedLocation.value = null
+        viewModel.longitude.value = 10.0
+        viewModel.latitude.value = 10.0
 
         // WHEN - attempting to validate
-        val result = saveReminderViewModel.validateEnteredData(
+        val result = viewModel.validateEnteredData(
             ReminderDataItem(
-                saveReminderViewModel.reminderTitle.value,
-                saveReminderViewModel.reminderDescription.value,
-                saveReminderViewModel.reminderSelectedLocation.value,
-                saveReminderViewModel.longitude.value,
-                saveReminderViewModel.latitude.value,
+                viewModel.reminderTitle.value,
+                viewModel.reminderDescription.value,
+                viewModel.reminderSelectedLocation.value,
+                viewModel.longitude.value,
+                viewModel.latitude.value,
                 "someId"
             )
         )
