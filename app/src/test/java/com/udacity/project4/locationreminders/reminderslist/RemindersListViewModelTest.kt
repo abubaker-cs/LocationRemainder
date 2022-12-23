@@ -22,7 +22,6 @@ import org.junit.runner.RunWith
 import org.koin.core.context.stopKoin
 import kotlin.coroutines.ContinuationInterceptor
 
-@Suppress("DEPRECATION")
 @RunWith(AndroidJUnit4::class)
 @ExperimentalCoroutinesApi
 class RemindersListViewModelTest {
@@ -65,6 +64,7 @@ class RemindersListViewModelTest {
         )
     }
 
+    @Suppress("DEPRECATION")
     @Test
     fun check_loading() {
 
@@ -85,8 +85,9 @@ class RemindersListViewModelTest {
 
     }
 
+    @Suppress("DEPRECATION")
     @Test
-    fun shouldReturnError() = runBlockingTest {
+    fun shouldReturn_Error() = runBlockingTest {
 
         // Delete all reminders from the fake dataSource
         dataSource.deleteAllReminders()
