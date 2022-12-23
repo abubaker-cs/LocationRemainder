@@ -6,13 +6,21 @@ import com.udacity.project4.locationreminders.data.dto.Result
 // FakeDataSource will act as a test double for the LocalDataSource
 class FakeDataSource : ReminderDataSource {
 
-    // reminderServiceData will be used to save reminders in the fake data source
+    /**
+     * LinkedHasMap vs HashMap
+     * =======================
+     * 1. The Major Difference between the HashMap and LinkedHashMap is the ordering of the elements.
+     * 2. The LinkedHashMap provides a way to order and trace the elements.
+     * 3. Comparatively, the HashMap does not support the ordering of the elements.
+     */
+
+    // This reminders variable (LinkedHashMap) will be used to store all reminders
     private var reminders: LinkedHashMap<String, ReminderDTO> = LinkedHashMap()
 
-    // Default false value for the shouldReturnError variable
-    private var shouldReturnError = false
+    // Default false value for the shouldReturnError property
+    var shouldReturnError = false
 
-    // This function will update the value for the shouldReturnError variable
+    // This function will update the value for the shouldReturnError property
     fun setReturnError(value: Boolean) {
         shouldReturnError = value
     }

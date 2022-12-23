@@ -8,10 +8,11 @@ import com.udacity.project4.locationreminders.data.FakeDataSource
 import com.udacity.project4.locationreminders.getOrAwaitValue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.DelayController
-import org.hamcrest.CoreMatchers
-import org.hamcrest.core.Is
-import org.hamcrest.core.IsNot
-import org.junit.Assert
+import kotlinx.coroutines.test.runBlockingTest
+import org.hamcrest.CoreMatchers.nullValue
+import org.hamcrest.core.Is.`is`
+import org.hamcrest.core.IsNot.not
+import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -19,17 +20,15 @@ import org.junit.runner.RunWith
 import org.koin.core.context.stopKoin
 import kotlin.coroutines.ContinuationInterceptor
 
+@Suppress("DEPRECATION")
 @RunWith(AndroidJUnit4::class)
 @ExperimentalCoroutinesApi
 class RemindersListViewModelTest {
 
-    //DONE: provide testing to the RemindersListViewModel and its live data objects
-    //Completed: provide testing to the RemindersListViewModel and its live data objects
-
     // Subject under test
     private lateinit var remindersListViewModel: RemindersListViewModel
 
-    // Use a fake repository to be injected into the view model.
+    // Our fake dataSource will be used to inject data into the RemindersListViewModel
     private lateinit var dataSource: FakeDataSource
 
     // Executes each task synchronously using Architecture Components.
@@ -45,12 +44,22 @@ class RemindersListViewModelTest {
      */
     @Before
     fun setupViewModel() {
+
+        // Stop Koin before each test
         stopKoin()
-        // Initialise the repository with no reminders.
+
+        // Create a new instance of the fake dataSource
         dataSource = FakeDataSource()
 
+        // Create a new instance of the RemindersListViewModel
         remindersListViewModel = RemindersListViewModel(
-            ApplicationProvider.getApplicationContext(), dataSource
+
+            // Pass the application context
+            ApplicationProvider.getApplicationContext(),
+
+            // Pass the fake dataSource
+            dataSource
+
         )
     }
 
@@ -62,28 +71,31 @@ class RemindersListViewModelTest {
         remindersListViewModel.loadReminders()
 
         // WHEN - the dispatcher is paused, showLoading is true
-        Assert.assertThat(remindersListViewModel.showLoading.getOrAwaitValue(), Is.`is`(true))
-        (mainCoroutineRule.coroutineContext[ContinuationInterceptor]!! as DelayController).resumeDispatcher()
+        assertThat(remindersListViewModel.showLoading.getOrAwaitValue(), `is`(true))
+        mainCoroutineRule.resumeDispatcher()
 
         // THEN - when the dispatcher is resumed, showloading is false
-        Assert.assertThat(remindersListViewModel.showLoading.getOrAwaitValue(), Is.`is`(false))
+        assertThat(remindersListViewModel.showLoading.getOrAwaitValue(), `is`(false))
 
     }
 
     @Test
-    fun loadRemindersWhenUnavailable_causesError() {
-        // GIVEN - there's a problem loading reminders
-        // Make the repository return errors
+    fun shouldReturnError_returnException() = runBlockingTest {
+
+        // Delete all reminders from the fake dataSource
+        dataSource.deleteAllReminders()
+
+        // GIVEN - Since we already deleted them so make the dataSource (repository) return errors
+        // by setting its value to ture
         dataSource.setReturnError(true)
 
-        // WHEN - we want to load rhe reminders
+        // WHEN - Try to load all reminders from the fake dataSource
         remindersListViewModel.loadReminders()
 
-        // THEN - It's an error, there's a snackbar
-        Assert.assertThat(
-            remindersListViewModel.showSnackBar.getOrAwaitValue(),
-            IsNot.not(CoreMatchers.nullValue())
-        )
+        // THEN - Display the error in the snackbar: "Couldn't retrieve reminders"
+        val actual =
+            remindersListViewModel.showSnackBar.getOrAwaitValue() == "Couldn't retrieve reminders"
+        assertThat(actual, not(nullValue()))
     }
 
 }
