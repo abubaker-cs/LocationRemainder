@@ -35,16 +35,21 @@ import org.koin.dsl.module
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
 
-//Medium Test to test the ReminderListFragment
-@MediumTest
+
 @RunWith(AndroidJUnit4::class)
 @ExperimentalCoroutinesApi
+//UI Testing
+@MediumTest
 class ReminderListFragmentTest {
 
     // DONE: test the navigation of the fragments.
+
+
     // DONE: test the displayed data on the UI.
+
+
     // DONE: add testing for the error messages.
-    private lateinit var remindersRepository: ReminderDataSource
+    private lateinit var dataSource: ReminderDataSource
     private lateinit var appContext: Application
 
     // Executes each task synchronously using Architecture Components.
@@ -86,11 +91,11 @@ class ReminderListFragmentTest {
 
         // TODO - get() jUnit
         // remindersRepository = get()
-        remindersRepository = RemindersLocalRepository(LocalDB.createRemindersDao(appContext))
+        dataSource = RemindersLocalRepository(LocalDB.createRemindersDao(appContext))
 
 
         runBlocking {
-            remindersRepository.deleteAllReminders()
+            dataSource.deleteAllReminders()
         }
     }
 
@@ -127,7 +132,7 @@ class ReminderListFragmentTest {
                 11.0,
                 "random1"
             )
-            remindersRepository.saveReminder(reminder1)
+            dataSource.saveReminder(reminder1)
 
             // WHEN - ReminderListFragment is displayed
             launchFragmentInContainer<ReminderListFragment>(Bundle(), R.style.AppTheme)

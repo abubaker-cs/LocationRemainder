@@ -23,6 +23,7 @@
               <option name="preferredColumnWidths">
                 <map>
                   <entry key="Duration" value="90" />
+                  <entry key="Nexus_5_API_30" value="120" />
                   <entry key="OPPO&#10; CPH1803" value="120" />
                   <entry key="Tests" value="360" />
                   <entry key="e84d198d" value="120" />
@@ -37,6 +38,7 @@
               <option name="preferredColumnWidths">
                 <map>
                   <entry key="Duration" value="90" />
+                  <entry key="Nexus_5_API_30" value="120" />
                   <entry key="OPPO&#10; CPH1803" value="120" />
                   <entry key="Tests" value="360" />
                   <entry key="e84d198d" value="120" />
@@ -46,6 +48,21 @@
           </value>
         </entry>
         <entry key="110941273">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="Nexus_5_API_30" value="120" />
+                  <entry key="OPPO&#10; CPH1803" value="120" />
+                  <entry key="Tests" value="360" />
+                  <entry key="e84d198d" value="120" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
+        <entry key="202320354">
           <value>
             <AndroidTestResultsTableState>
               <option name="preferredColumnWidths">
@@ -74,7 +91,36 @@
             </AndroidTestResultsTableState>
           </value>
         </entry>
+        <entry key="331264203">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="OPPO&#10; CPH1803" value="120" />
+                  <entry key="Tests" value="360" />
+                  <entry key="e84d198d" value="120" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
         <entry key="358718836">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="Nexus_5_API_30" value="120" />
+                  <entry key="OPPO&#10; CPH1803" value="120" />
+                  <entry key="Tests" value="360" />
+                  <entry key="e84d198d" value="120" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
+        <entry key="893367904">
           <value>
             <AndroidTestResultsTableState>
               <option name="preferredColumnWidths">
@@ -108,6 +154,7 @@
               <option name="preferredColumnWidths">
                 <map>
                   <entry key="Duration" value="90" />
+                  <entry key="Nexus_5_API_30" value="120" />
                   <entry key="OPPO&#10; CPH1803" value="120" />
                   <entry key="Tests" value="360" />
                   <entry key="e84d198d" value="120" />

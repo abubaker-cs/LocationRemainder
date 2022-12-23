@@ -27,6 +27,7 @@ class RemindersLocalRepositoryTest {
     private lateinit var remindersDAO: RemindersDao
     private lateinit var repository: RemindersLocalRepository
 
+    @Suppress("DEPRECATION")
     @Before
     fun setup() {
         remindersDatabase = Room.inMemoryDatabaseBuilder(

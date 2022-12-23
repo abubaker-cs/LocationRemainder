@@ -31,18 +31,38 @@ class RemindersDaoTest {
     private lateinit var database: RemindersDatabase
 
     @Before
-    fun initDb() {
+    fun init() {
+
+        // Using an in-memory database because the information stored here disappears when the
+        // process is killed.
         database = Room.inMemoryDatabaseBuilder(
+
+            // Context used to open or create the database.
             ApplicationProvider.getApplicationContext(),
+
+            // The RemindersDatabase class.
             RemindersDatabase::class.java
-        ).build()
+
+        )
+            // Allowing main thread queries, just for testing.
+            .allowMainThreadQueries()
+
+            // Build the database.
+            .build()
     }
 
     @After
-    fun closeDb() = database.close()
+    fun closeDb() {
 
+        // Close the database
+        database.close()
+
+    }
+
+    @Suppress("DEPRECATION")
     @Test
     fun insertReminderAndGetById() = runBlockingTest {
+
         // GIVEN - insert a reminder
         val reminder = ReminderDTO(
             "title",
@@ -52,6 +72,7 @@ class RemindersDaoTest {
             12.0,
             "random"
         )
+
         database.reminderDao().saveReminder(reminder)
 
         // WHEN - Get the reminder by id from the database
@@ -65,4 +86,5 @@ class RemindersDaoTest {
         assertThat(loaded.latitude, `is`(reminder.latitude))
         assertThat(loaded.longitude, `is`(reminder.longitude))
     }
+
 }

@@ -7,6 +7,7 @@ import com.udacity.project4.locationreminders.data.local.RemindersLocalRepositor
 import com.udacity.project4.locationreminders.reminderslist.RemindersListViewModel
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
@@ -41,7 +42,7 @@ class MyApp : Application() {
 
             // ReminderDataSource
             // TODO: Declare the local data source as a single to be injected in the repository
-            // single { RemindersLocalRepository(get()) as ReminderDataSource }
+            // single { RemindersLocalRepository(get()) }
 
             // https://knowledge.udacity.com/questions/734982
             single<ReminderDataSource> { RemindersLocalRepository(get()) }
@@ -58,7 +59,7 @@ class MyApp : Application() {
         startKoin {
 
             // use Android logger - Level.INFO by default
-            // androidLogger()
+            androidLogger()
 
             // Inject | Reference Android context
             androidContext(this@MyApp)

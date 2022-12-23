@@ -94,34 +94,78 @@ class RemindersActivityTest : KoinTest {
     }
 
     /**
-     * ----------------------------------- Comments below
+     * Protection against memory leaks and delete all reminders after each test
      */
-
     @After
     fun unregisterIdlingResource() = runBlocking {
+
+        // Unregister your idling resource so it can be garbage collected and does not leak any memory.
         IdlingRegistry.getInstance().unregister(dataBindingIdlingResource)
 
+        // clear the data to start fresh
         repository.deleteAllReminders()
+
     }
 
+    /**
+     * A helper function to get the activity from the activityScenario
+     */
+    private fun getActivity(activityScenario: ActivityScenario<RemindersActivity>): Activity? {
+
+        // Create a new variable to hold the activity
+        var activity: Activity? = null
+
+        //  Use the activityScenario variable to call the onActivity method
+        activityScenario.onActivity {
+
+            // Set the activity variable to the activity in the onActivity lambda
+            activity = it
+
+        }
+
+        // Return the activity
+        return activity
+    }
+
+    /**
+     * Add a new reminder
+     */
     @Test
-    fun add_new_reminder() = runBlocking {
+    fun saveReminder_displayReminder() = runBlocking {
 
         // start the reminders screen
         val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
+
+        // Monitor the activity
         dataBindingIdlingResource.monitorActivity(activityScenario)
 
-        // click on the FAB add reminder
+        // + FAB: click on the FAB to add a new reminder from teh RemindersListFragment
         onView(withId(R.id.addReminderFAB)).perform(ViewActions.click())
 
-        // check that we are on the SaveReminder screen
-        onView(withId(R.id.reminderTitle))
-            .check(ViewAssertions.matches(isDisplayed()))
+        // Confirm that we are on the SaveReminderFragment by using @+id/reminderTitle
+        onView(withId(R.id.reminderTitle)).check(ViewAssertions.matches(isDisplayed()))
 
-        // Make sure the activity is closed before resetting the db:
+//        onView(withId(R.id.reminderTitle)).perform(ViewActions.replaceText("New title"))
+//        onView(withId(R.id.reminderDescription)).perform(ViewActions.replaceText("New description"))
+//        onView(withId(R.id.selectLocation)).perform(ViewActions.click())
+//        onView(withId(R.id.map)).perform(ViewActions.longClick())
+//        onView(withId(R.id.save_button)).perform(ViewActions.click())
+//        onView(withId(R.id.saveReminder)).perform(ViewActions.click())
+//        onView(withId(R.id.addReminderFAB)).perform(ViewActions.click())
+//        onView(withId(com.google.android.material.R.id.snackbar_text)).check(ViewAssertions.matches(withText(R.string.geofences_added)))
+
+        // Make sure the activity is closed
+        // ================================
+        // 1. Finishes the managed activity and cleans up device's state.
+        // 2. It is highly recommended to call this method after you test is done to keep the device
+        //    state clean although this is optional.
         activityScenario.close()
+
     }
 
+    /**
+     * Add a new reminder and check that it is displayed on the screen using the Toast message
+     */
     @Test
     fun show_toast_message() {
 
@@ -160,6 +204,9 @@ class RemindersActivityTest : KoinTest {
         activityScenario.close()
     }
 
+    /**
+     * Add a new reminder and check that it is displayed on the screen using the Snackbar message
+     */
     @Test
     fun show_Snackbar_message() {
 
@@ -183,17 +230,6 @@ class RemindersActivityTest : KoinTest {
         onView(withId(com.google.android.material.R.id.snackbar_text))
             .check(ViewAssertions.matches(withText(R.string.save_reminder_error_desc)))
         activityScenario.close()
-    }
-
-    /**
-     * getActivity()
-     */
-    private fun getActivity(activityScenario: ActivityScenario<RemindersActivity>): Activity? {
-        var activity: Activity? = null
-        activityScenario.onActivity {
-            activity = it
-        }
-        return activity
     }
 
 }
