@@ -7,7 +7,7 @@ import com.udacity.project4.locationreminders.data.dto.Result
 class FakeDataSource : ReminderDataSource {
 
     // reminderServiceData will be used to save reminders in the fake data source
-    private var remindersServiceData: LinkedHashMap<String, ReminderDTO> = LinkedHashMap()
+    private var reminders: LinkedHashMap<String, ReminderDTO> = LinkedHashMap()
 
     // Default false value for the shouldReturnError variable
     private var shouldReturnError = false
@@ -26,7 +26,7 @@ class FakeDataSource : ReminderDataSource {
         }
 
         // SUCCESS - Upon success, return the outcome message
-        remindersServiceData[id]?.let {
+        reminders[id]?.let {
             return Result.Success(it)
         }
 
@@ -43,7 +43,7 @@ class FakeDataSource : ReminderDataSource {
         }
 
         // Otherwise, return the list of reminders
-        return Result.Success(remindersServiceData.values.toList())
+        return Result.Success(reminders.values.toList())
 
     }
 
@@ -51,7 +51,7 @@ class FakeDataSource : ReminderDataSource {
     override suspend fun saveReminder(reminder: ReminderDTO) {
 
         // Add reminder to the remindersServiceData (fake data source)
-        remindersServiceData.values.add(reminder)
+        reminders.values.add(reminder)
 
     }
 
@@ -59,7 +59,7 @@ class FakeDataSource : ReminderDataSource {
     override suspend fun deleteAllReminders() {
 
         // Clear the data
-        remindersServiceData.clear()
+        reminders.clear()
 
     }
 

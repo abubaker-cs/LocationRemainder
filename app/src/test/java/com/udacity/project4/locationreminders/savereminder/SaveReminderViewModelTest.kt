@@ -48,6 +48,7 @@ class SaveReminderViewModelTest {
 
     @Test
     fun whenIncompleteInfo_validationReturnsNull() {
+
         // GIVEN - incomplete reminder fields, title is null
         saveReminderViewModel.onClear()
         saveReminderViewModel.reminderTitle.value = null
