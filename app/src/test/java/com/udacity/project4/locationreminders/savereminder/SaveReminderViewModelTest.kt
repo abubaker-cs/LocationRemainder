@@ -60,25 +60,56 @@ class SaveReminderViewModelTest {
     }
 
     @Test
-    fun whenIncompleteInfo_validationReturnsNull() {
+    fun returnNull_onValidationFailure() {
 
-        // GIVEN - incomplete reminder fields, title is null
+        // Clear the live data objects
         viewModel.onClear()
-        viewModel.reminderTitle.value = null
-        viewModel.reminderDescription.value = "some description"
-        viewModel.reminderSelectedLocation.value = null
-        viewModel.longitude.value = 10.0
-        viewModel.latitude.value = 10.0
+
+        /**
+         * GIVEN - User | Sample Data is incomplete
+         */
+
+        // Title
+        viewModel.reminderTitle.value = "Do Laundry"
+
+        // Description
+        viewModel.reminderDescription.value = "Get laundry done at the weekend"
+
+        // Location
+        viewModel.reminderSelectedLocation.value = null // Set to null, so validation should fail
+
+        // Latitude
+        viewModel.longitude.value = 31.374418717270036
+
+        // Longitude
+        viewModel.latitude.value = 74.16895371705361
+
+
+        /**
+         * Validate sample data
+         */
 
         // WHEN - attempting to validate
         val result = viewModel.validateEnteredData(
             ReminderDataItem(
+
+                // Title
                 viewModel.reminderTitle.value,
+
+                // Description
                 viewModel.reminderDescription.value,
+
+                // Location
                 viewModel.reminderSelectedLocation.value,
+
+                // Longitude
                 viewModel.longitude.value,
+
+                // Latitude
                 viewModel.latitude.value,
-                "someId"
+
+                // ID
+                "dummyId"
             )
         )
 
