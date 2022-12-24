@@ -86,6 +86,32 @@ class RemindersLocalRepositoryTest {
     }
 
     @Test
+    fun deleteAllReminders_checkIsEmpty() = runBlocking {
+
+        val reminder = ReminderDTO(
+            "Workout",
+            "Visit gym for the triceps workout",
+            "Bahira Town",
+            31.37150220702937,
+            74.18466379217382,
+            "workout3"
+        )
+
+        // Save the reminder
+        repository.saveReminder(reminder)
+
+
+        // Delete all the reminders
+        repository.deleteAllReminders()
+
+
+        val repo = (repository.getReminders() as Result.Success).data
+
+        // Check if the reminders list is empty
+        assertThat(repo, `is`(emptyList()))
+    }
+
+    @Test
     fun saveReminder_matchesRepository() = runBlocking {
 
         // GIVEN - insert new reminders in the database
@@ -140,23 +166,4 @@ class RemindersLocalRepositoryTest {
         assertThat(sortedListByID[2].id, `is`(remindersList[2].id))
     }
 
-    @Test
-    fun deleteAllReminders_checkIsEmpty() = runBlocking {
-
-        val reminder = ReminderDTO(
-            "title",
-            "dec",
-            "loc",
-            0.0,
-            0.0
-        )
-
-        repository.saveReminder(reminder)
-
-        repository.deleteAllReminders()
-
-        val repo = (repository.getReminders() as Result.Success).data
-
-        assertThat(repo, `is`(emptyList()))
-    }
 }
