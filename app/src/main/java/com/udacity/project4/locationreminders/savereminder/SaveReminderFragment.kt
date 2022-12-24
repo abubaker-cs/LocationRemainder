@@ -33,13 +33,13 @@ import com.udacity.project4.databinding.FragmentSaveReminderBinding
 import com.udacity.project4.locationreminders.geofence.GeofenceBroadcastReceiver
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.android.ext.android.inject
 import java.util.*
 
 class SaveReminderFragment : BaseFragment() {
 
     //Get the view model this time as a single to be shared with the another fragment
-    override val _viewModel: SaveReminderViewModel by sharedViewModel()
+    override val _viewModel: SaveReminderViewModel by inject() // sharedViewModel
 
     private var _binding: FragmentSaveReminderBinding? = null
     private val binding get() = _binding!!
@@ -80,7 +80,7 @@ class SaveReminderFragment : BaseFragment() {
 
         super.onViewCreated(view, savedInstanceState)
 
-        // Set viewLifecycleOwner to the viewmodel
+        // Set viewLifecycleOwner to the viewModel
         binding.lifecycleOwner = viewLifecycleOwner
 
         // Button: Select Map
@@ -125,6 +125,7 @@ class SaveReminderFragment : BaseFragment() {
     }
 
     // Activity Result
+    @Suppress("DEPRECATION")
     @Deprecated("Deprecated in Java")
     @RequiresApi(Build.VERSION_CODES.S)
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -175,6 +176,7 @@ class SaveReminderFragment : BaseFragment() {
         return foregroundLocationApproved && backgroundPermissionApproved
     }
 
+    @Suppress("DEPRECATION")
     @RequiresApi(Build.VERSION_CODES.S)
     private fun checkDeviceLocationSettingsAndStartGeofence(resolve: Boolean = true) {
 
@@ -262,6 +264,7 @@ class SaveReminderFragment : BaseFragment() {
         _viewModel.navigationCommand.value = NavigationCommand.BackTo(R.id.reminderListFragment)
     }
 
+    @Suppress("DEPRECATION")
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun requestForegroundAndBackgroundLocationPermissions() {
         if (foregroundAndBackgroundLocationPermissionApproved())

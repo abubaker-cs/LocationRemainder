@@ -11,7 +11,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
@@ -31,20 +30,20 @@ import com.udacity.project4.base.NavigationCommand
 import com.udacity.project4.databinding.FragmentSelectLocationBinding
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.android.ext.android.inject
 import java.util.*
 
 class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     //Use Koin to get the view model of the SaveReminder
     // override val _viewModel: SaveReminderViewModel by inject()
-    override val _viewModel: SaveReminderViewModel by sharedViewModel()
+    override val _viewModel: SaveReminderViewModel by inject() // sharedViewModel
 
     private var _binding: FragmentSelectLocationBinding? = null
     private val binding get() = _binding!!
 
     // TODO check if it is redundant
-    private lateinit var locationPermissionRequest: ActivityResultLauncher<Array<String>>
+    // private late init var locationPermissionRequest: ActivityResultLauncher<Array<String>>
 
     private lateinit var map: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -80,6 +79,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     /**
      * Override: onCreateView()
      */
+    @Suppress("DEPRECATION")
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -387,6 +387,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
+    @Suppress("DEPRECATION")
     @RequiresApi(Build.VERSION_CODES.Q)
     @Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(
@@ -405,7 +406,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                 R.string.location_required_error, Snackbar.LENGTH_INDEFINITE
             ).setAction(android.R.string.ok) {
                 requestPermissions(
-                    arrayOf<String>(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                     REQUEST_LOCATION_PERMISSION
                 )
             }.show()
@@ -428,6 +429,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     }
 
     // This method is called when the user clicks on a menu item.
+    @Suppress("DEPRECATION")
     @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
 
