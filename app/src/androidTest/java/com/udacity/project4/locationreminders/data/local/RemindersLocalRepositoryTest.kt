@@ -68,7 +68,25 @@ class RemindersLocalRepositoryTest {
     }
 
     @Test
-    fun saveAndGetReminders_fromDatabase() = runBlocking {
+    fun dataNotFound_errorMessageDisplayed() = runBlocking {
+
+        val reminder = ReminderDTO(
+            "Workout",
+            "Visit gym for the biceps workout",
+            "Bahira Town",
+            31.37150220702937,
+            74.18466379217382,
+            "workout2"
+        )
+
+        val result = (repository.getReminder(reminder.id) as Result.Error).message
+
+        assertThat(result, `is`("Reminder not found!"))
+
+    }
+
+    @Test
+    fun saveReminder_matchesRepository() = runBlocking {
 
         // GIVEN - insert new reminders in the database
         val legsDay = ReminderDTO(
@@ -120,5 +138,25 @@ class RemindersLocalRepositoryTest {
         assertThat(sortedListByID[0].id, `is`(remindersList[0].id))
         assertThat(sortedListByID[1].id, `is`(remindersList[1].id))
         assertThat(sortedListByID[2].id, `is`(remindersList[2].id))
+    }
+
+    @Test
+    fun deleteAllReminders_checkIsEmpty() = runBlocking {
+
+        val reminder = ReminderDTO(
+            "title",
+            "dec",
+            "loc",
+            0.0,
+            0.0
+        )
+
+        repository.saveReminder(reminder)
+
+        repository.deleteAllReminders()
+
+        val repo = (repository.getReminders() as Result.Success).data
+
+        assertThat(repo, `is`(emptyList()))
     }
 }
