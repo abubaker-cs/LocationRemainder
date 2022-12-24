@@ -30,7 +30,7 @@ import com.udacity.project4.base.NavigationCommand
 import com.udacity.project4.databinding.FragmentSelectLocationBinding
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
-import org.koin.androidx.viewmodel.ext.android.activityViewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import java.util.*
 
 @Suppress("DEPRECATION")
@@ -40,7 +40,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     // override val _viewModel: SaveReminderViewModel by inject()
 
     // https://insert-koin.io/docs/reference/koin-android/viewmodel#injecting-your-viewmodel
-    override val _viewModel: SaveReminderViewModel by activityViewModel() // sharedViewModel
+    override val _viewModel: SaveReminderViewModel by sharedViewModel()
 
     private var _binding: FragmentSelectLocationBinding? = null
     private val binding get() = _binding!!

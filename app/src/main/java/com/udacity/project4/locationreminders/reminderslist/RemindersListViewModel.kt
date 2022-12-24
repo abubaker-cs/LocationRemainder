@@ -1,3 +1,5 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package com.udacity.project4.locationreminders.reminderslist
 
 import android.app.Application

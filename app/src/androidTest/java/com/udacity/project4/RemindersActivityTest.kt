@@ -31,8 +31,8 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
-import org.koin.test.KoinTest
-import org.koin.test.inject
+import org.koin.test.AutoCloseKoinTest
+import org.koin.test.get
 
 /**
  * Target: RemindersActivity
@@ -40,7 +40,7 @@ import org.koin.test.inject
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
-class RemindersActivityTest : KoinTest {
+class RemindersActivityTest : AutoCloseKoinTest() {
 
     private lateinit var repository: ReminderDataSource
     private lateinit var appContext: Application
@@ -109,7 +109,8 @@ class RemindersActivityTest : KoinTest {
         }
 
         // Get the repository
-        val repository: ReminderDataSource by inject()
+        // val repository: ReminderDataSource by inject()
+        repository = get()
 
         // Clear the data to start fresh
         runBlocking {

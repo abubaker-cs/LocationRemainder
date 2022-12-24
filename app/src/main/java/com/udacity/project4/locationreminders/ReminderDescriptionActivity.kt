@@ -18,6 +18,7 @@ class ReminderDescriptionActivity : AppCompatActivity() {
     private lateinit var binding: ActivityReminderDescriptionBinding
 
 
+    @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)

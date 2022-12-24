@@ -33,13 +33,14 @@ import com.udacity.project4.databinding.FragmentSaveReminderBinding
 import com.udacity.project4.locationreminders.geofence.GeofenceBroadcastReceiver
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
-import org.koin.androidx.viewmodel.ext.android.activityViewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import java.util.*
 
 class SaveReminderFragment : BaseFragment() {
 
-    //Get the view model this time as a single to be shared with the another fragment
-    override val _viewModel: SaveReminderViewModel by activityViewModel() // sharedViewModel
+    // Get the view model this time as a single to be shared with the another fragment
+    @Suppress("DEPRECATION")
+    override val _viewModel: SaveReminderViewModel by sharedViewModel()
 
     private var _binding: FragmentSaveReminderBinding? = null
     private val binding get() = _binding!!

@@ -12,6 +12,7 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
 
+@Suppress("USELESS_CAST")
 class MyApp : Application() {
 
     override fun onCreate() {
@@ -23,6 +24,10 @@ class MyApp : Application() {
          */
         val myModule = module {
 
+            /**
+             * ViewModels: SaveReminderViewModel + RemindersListViewModel
+             */
+
             //Declare a ViewModel - be later inject into Fragment with dedicated injector using by viewModel()
             viewModel {
                 RemindersListViewModel(
@@ -31,25 +36,36 @@ class MyApp : Application() {
                 )
             }
 
+            /**
+             * Singletons: LocalDB + RemindersLocalRepository
+             */
+
             //Declare singleton definitions to be later injected using by inject()
-            //This view model is declared singleton to be used across multiple fragments
-            viewModel {
+            single {
                 SaveReminderViewModel(
                     get(),
                     get() as ReminderDataSource
                 )
             }
 
-            // ReminderDataSource
-            // TODO: Declare the local data source as a single to be injected in the repository
-            // single { RemindersLocalRepository(get()) }
-
-            // https://knowledge.udacity.com/questions/734982
-            // single<ReminderDataSource> { RemindersLocalRepository(get()) }
-
+            // RemindersLocalRepository
             single { RemindersLocalRepository(get()) }
 
+            // ReminderDataSource
+            single<ReminderDataSource> { get<RemindersLocalRepository>() }
+
             single { LocalDB.createRemindersDao(this@MyApp) }
+
+            /**
+             * Factory - It will create a new instance of MainRepositoryImpl every time it is requested
+             */
+            factory {
+
+                // If we have two view models that need the same repository, we can use the single
+                // keyword to create a single instance of the repository and share it across the application
+                RemindersLocalRepository(get())
+
+            }
 
         }
 
@@ -59,7 +75,7 @@ class MyApp : Application() {
          */
         startKoin {
 
-            // use Android logger - Level.INFO by default
+            // Logger
             androidLogger()
 
             // Inject | Reference Android context
