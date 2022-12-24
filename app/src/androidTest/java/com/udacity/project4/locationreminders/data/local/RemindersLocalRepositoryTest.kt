@@ -25,72 +25,100 @@ import org.junit.runner.RunWith
 class RemindersLocalRepositoryTest {
 
     // DONE: Add testing implementation to the RemindersLocalRepository.kt
-    // Class under test
-    private lateinit var remindersDatabase: RemindersDatabase
-    private lateinit var remindersDAO: RemindersDao
+    private lateinit var database: RemindersDatabase
+    private lateinit var dao: RemindersDao
     private lateinit var repository: RemindersLocalRepository
 
     @Suppress("DEPRECATION")
     @Before
-    fun setup() {
-        remindersDatabase = Room.inMemoryDatabaseBuilder(
+    fun init() {
+
+        // Using an in-memory database because the information stored here disappears when the
+        // process is killed.
+        database = Room.inMemoryDatabaseBuilder(
+
+            // Context used to open or create the database.
             InstrumentationRegistry.getInstrumentation().context,
+
+            // The RemindersDatabase class.
             RemindersDatabase::class.java
+
         )
+
+            // Allowing main thread queries, just for testing.
             .allowMainThreadQueries()
+
+            // Build the database.
             .build()
-        remindersDAO = remindersDatabase.reminderDao()
-        repository =
-            RemindersLocalRepository(
-                remindersDAO
-            )
+
+        // Get a reference to the DAO
+        dao = database.reminderDao()
+
+        // Get a reference to the repository
+        repository = RemindersLocalRepository(dao)
+
     }
 
     @After
-    fun closeDb() = remindersDatabase.close()
+    fun closeDb() {
+
+        // Close the database
+        database.close()
+
+    }
 
     @Test
-    fun insertThreeReminders_getAllThreeFromDatabase() = runBlocking {
-        // GIVEN - insert three reminders in the database
-        val reminder1 = ReminderDTO(
-            "title1",
-            "description1",
-            "somewhere1",
-            11.0,
-            11.0,
-            "random1"
-        )
-        val reminder2 = ReminderDTO(
-            "title2",
-            "descriptio2n",
-            "somewhere2",
-            12.0,
-            12.0,
-            "random2"
-        )
-        val reminder3 = ReminderDTO(
-            "title3",
-            "description3",
-            "somewhere3",
-            13.0,
-            13.0,
-            "random3"
-        )
-        remindersDatabase.reminderDao().saveReminder(reminder1)
-        remindersDatabase.reminderDao().saveReminder(reminder2)
-        remindersDatabase.reminderDao().saveReminder(reminder3)
+    fun saveAndGetReminders_fromDatabase() = runBlocking {
 
-        val remindersList = listOf(reminder1, reminder2, reminder3).sortedBy { it.id }
+        // GIVEN - insert new reminders in the database
+        val legsDay = ReminderDTO(
+            "Workout",
+            "Visit gym for the legs workout",
+            "Bahira Town",
+            31.37150220702937,
+            74.18466379217382,
+            "workout1"
+        )
+
+        val bicepsDay = ReminderDTO(
+            "Workout",
+            "Visit gym for the biceps workout",
+            "Bahira Town",
+            31.37150220702937,
+            74.18466379217382,
+            "workout2"
+        )
+
+        val tricepsDay = ReminderDTO(
+            "Workout",
+            "Visit gym for the triceps workout",
+            "Bahira Town",
+            31.37150220702937,
+            74.18466379217382,
+            "workout3"
+        )
+
+        // Save the reminders
+        database.reminderDao().saveReminder(legsDay)
+        database.reminderDao().saveReminder(bicepsDay)
+        database.reminderDao().saveReminder(tricepsDay)
+
+        // Sort the reminders by their ids in ascending order
+        val remindersList = listOf(legsDay, bicepsDay, tricepsDay).sortedBy {
+            it.id
+        }
 
         // WHEN - Get all the reminders from the database
-        val loadedRemindersList = remindersDatabase.reminderDao().getReminders()
-        val sortedLoadedRemindersList = loadedRemindersList.sortedBy { it.id }
+        val reminders = database.reminderDao().getReminders()
+
+        val sortedListByID = reminders.sortedBy { it.id }
+
+        // Search for the reminder with id "fake", this should return an Error
         val reminder = repository.getReminder("fake") as Result.Error
 
-        // THEN - The loaded data contains the expected values
         assertThat(reminder.message, `is`("Reminder not found!"))
-        assertThat(sortedLoadedRemindersList[0].id, `is`(remindersList[0].id))
-        assertThat(sortedLoadedRemindersList[1].id, `is`(remindersList[1].id))
-        assertThat(sortedLoadedRemindersList[2].id, `is`(remindersList[2].id))
+        assertThat(sortedListByID[0].id, `is`(remindersList[0].id))
+        assertThat(sortedListByID[1].id, `is`(remindersList[1].id))
+        assertThat(sortedListByID[2].id, `is`(remindersList[2].id))
     }
 }

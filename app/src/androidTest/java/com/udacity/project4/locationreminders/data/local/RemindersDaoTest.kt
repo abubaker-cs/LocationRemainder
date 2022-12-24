@@ -46,6 +46,7 @@ class RemindersDaoTest {
             RemindersDatabase::class.java
 
         )
+
             // Allowing main thread queries, just for testing.
             .allowMainThreadQueries()
 
