@@ -110,6 +110,7 @@ dependencies {
     // Room dependencies
     implementation "androidx.room:room-ktx:$roomVersion"
     implementation "androidx.room:room-runtime:$roomVersion"
+    implementation 'androidx.leanback:leanback:1.0.0'
     kapt "androidx.room:room-compiler:$roomVersion"
 
     // Coroutines Dependencies
@@ -180,11 +181,10 @@ dependencies {
     implementation "io.insert-koin:koin-android-compat:$koinVersion"
     implementation "io.insert-koin:koin-androidx-navigation:$koinVersion"
 
-
     // UI | Instrumental Testing - Mockito
     androidTestImplementation "org.mockito:mockito-core:$mockitoVersion"
     androidTestImplementation "com.linkedin.dexmaker:dexmaker-mockito:$dexMakerVersion"
-    // androidTestImplementation('org.koin:koin-test:2.0.1') { exclude group: 'org.mockito' }
+    // androidTestImplementation('org.koin:koin-test:3.3.0') { exclude group: 'org.mockito' }
 
     //Maps & Geofencing
     implementation 'com.google.android.gms:play-services-maps:18.1.0'
@@ -202,5 +202,7 @@ dependencies {
 
     // Leak Canary
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.10'
+
+    implementation 'androidx.multidex:multidex:2.0.1'
 
 }

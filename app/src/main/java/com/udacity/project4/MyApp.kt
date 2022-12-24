@@ -45,8 +45,9 @@ class MyApp : Application() {
             // single { RemindersLocalRepository(get()) }
 
             // https://knowledge.udacity.com/questions/734982
-            single<ReminderDataSource> { RemindersLocalRepository(get()) }
+            // single<ReminderDataSource> { RemindersLocalRepository(get()) }
 
+            single { RemindersLocalRepository(get()) }
 
             single { LocalDB.createRemindersDao(this@MyApp) }
 
