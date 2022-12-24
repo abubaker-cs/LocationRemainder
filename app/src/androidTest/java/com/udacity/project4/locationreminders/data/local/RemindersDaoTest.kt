@@ -17,18 +17,20 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-// Small Test to test the RemindersDao
+/**
+ * Target: RemindersDao.kt
+ */
+
 @SmallTest
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class RemindersDaoTest {
 
-    // DONE: Add testing implementation to the RemindersDao.kt
+    private lateinit var database: RemindersDatabase
+
     // Executes each task synchronously using Architecture Components.
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
-
-    private lateinit var database: RemindersDatabase
 
     @Before
     fun init() {
@@ -61,18 +63,63 @@ class RemindersDaoTest {
 
     @Suppress("DEPRECATION")
     @Test
-    fun insertReminderAndGetById() = runBlockingTest {
+    fun saveAndDeleteAllReminder_checkIsEmpty() = runBlockingTest {
 
-        // GIVEN - insert a reminder
+        val legsDay = ReminderDTO(
+            "Workout",
+            "Visit gym for the legs workout",
+            "Bahira Town",
+            31.37150220702937,
+            74.18466379217382,
+        )
+
+        val bicepsDay = ReminderDTO(
+            "Workout",
+            "Visit gym for the biceps workout",
+            "Bahira Town",
+            31.37150220702937,
+            74.18466379217382,
+        )
+
+        val tricepsDay = ReminderDTO(
+            "Workout",
+            "Visit gym for the triceps workout",
+            "Bahira Town",
+            31.37150220702937,
+            74.18466379217382,
+        )
+
+        // Save the reminders
+        database.reminderDao().saveReminder(legsDay)
+        database.reminderDao().saveReminder(bicepsDay)
+        database.reminderDao().saveReminder(tricepsDay)
+
+        // Delete all reminders
+        database.reminderDao().deleteAllReminders()
+
+        // Get all reminders
+        val reminders = database.reminderDao().getReminders()
+
+        // Check if the retrieved list is empty
+        assertThat(reminders, `is`(emptyList()))
+
+    }
+
+    @Suppress("DEPRECATION")
+    @Test
+    fun saveReminder_getById() = runBlockingTest {
+
+        // GIVEN - insert a sample reminder
         val reminder = ReminderDTO(
-            "title",
-            "description",
-            "somewhere",
-            12.0,
-            12.0,
+            "Workout",
+            "Visit gym for the legs workout",
+            "Bahira Town",
+            31.37150220702937,
+            74.18466379217382,
             "random"
         )
 
+        // Save the reminder
         database.reminderDao().saveReminder(reminder)
 
         // WHEN - Get the reminder by id from the database
@@ -80,11 +127,23 @@ class RemindersDaoTest {
 
         // THEN - The loaded data contains the expected values
         assertThat(loaded as ReminderDTO, notNullValue())
+
+        // ID
         assertThat(loaded.id, `is`(reminder.id))
+
+        // Title
         assertThat(loaded.title, `is`(reminder.title))
+
+        // Description
         assertThat(loaded.description, `is`(reminder.description))
+
+        // Location
         assertThat(loaded.latitude, `is`(reminder.latitude))
+
+        // Latitude
         assertThat(loaded.longitude, `is`(reminder.longitude))
+
     }
 
 }
+

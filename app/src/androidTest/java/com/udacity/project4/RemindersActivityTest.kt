@@ -34,7 +34,10 @@ import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.inject
 
-// END TO END test to black box test the app
+/**
+ * Target: RemindersActivity
+ */
+
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class RemindersActivityTest : KoinTest {

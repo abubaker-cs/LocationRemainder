@@ -35,6 +35,9 @@ import org.koin.dsl.module
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
 
+/**
+ * Target: ReminderListFragment
+ */
 
 @RunWith(AndroidJUnit4::class)
 @ExperimentalCoroutinesApi
