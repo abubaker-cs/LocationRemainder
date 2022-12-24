@@ -45,52 +45,73 @@ class RemindersActivityTest : KoinTest {
     private lateinit var repository: ReminderDataSource
     private lateinit var appContext: Application
 
+    /**
+     * An espresso idling resource implementation that reports idle status for all data binding
+     * layouts. Data Binding uses a mechanism to post messages which Espresso doesn't track yet.
+     *
+     * Since this application only uses fragments, the resource only checks the fragments and their
+     * children instead of the whole view tree.
+     */
     private val dataBindingIdlingResource = DataBindingIdlingResource()
 
     /**
      * As we use Koin as a Service Locator Library to develop our code, we'll also use Koin to test our code.
      * at this step we will initialize Koin related code to be able to use it in out testing.
      */
-
     @Before
     fun registerIdlingResource() {
         IdlingRegistry.getInstance().register(dataBindingIdlingResource)
     }
 
+    // Execute this init() code before each test
     @Before
     fun init() {
 
-        //stop the original app koin
+        // Stop the previous instance of Koin
         stopKoin()
 
+        // Get the context of the application
         appContext = getApplicationContext()
 
         val myModule = module {
+
+            // RemindersListViewModel
             viewModel {
                 RemindersListViewModel(
                     appContext,
                     get() as ReminderDataSource
                 )
             }
+
+            // SaveReminderViewModel
             single {
                 SaveReminderViewModel(
                     appContext,
                     get() as ReminderDataSource
                 )
             }
-            single { RemindersLocalRepository(get()) }
-            single { LocalDB.createRemindersDao(appContext) }
+
+            // dataSource: RemindersLocalRepository
+            single {
+                RemindersLocalRepository(get())
+            }
+
+            // DAO
+            single {
+                LocalDB.createRemindersDao(appContext)
+            }
+
         }
 
-        //declare a new koin module
+        // Start Koin with the recently defined modules
         startKoin {
             modules(listOf(myModule))
         }
 
-        //Get our real repository
+        // Get the repository
         val repository: ReminderDataSource by inject()
 
-        //clear the data to start fresh
+        // Clear the data to start fresh
         runBlocking {
             repository.deleteAllReminders()
         }
@@ -136,10 +157,8 @@ class RemindersActivityTest : KoinTest {
     @Test
     fun saveReminder_displayReminder() = runBlocking {
 
-        // start the reminders screen
+        // Start and Monitory the RemindersActivity
         val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
-
-        // Monitor the activity
         dataBindingIdlingResource.monitorActivity(activityScenario)
 
         // + FAB: click on the FAB to add a new reminder from teh RemindersListFragment
@@ -175,25 +194,36 @@ class RemindersActivityTest : KoinTest {
         val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
 
+        // + FAB: click on the FAB to add a new reminder from the RemindersListFragment
         onView(withId(R.id.addReminderFAB)).perform(ViewActions.click())
 
+        // Confirm that we are on the SaveReminderFragment by using @+id/reminderTitle
         onView(withId(R.id.reminderTitle))
             .perform(ViewActions.replaceText("Test Title"))
 
+        // Add "Test Description" to the @+id/reminderDescription
         onView(withId(R.id.reminderDescription))
             .perform(ViewActions.replaceText("Test Description"))
 
-        Thread.sleep(1000)
+        // sleep | wait for 2.5 seconds
+        Thread.sleep(2500)
 
+        // Click on the @+id/selectLocation to select a geo location
         onView(withId(R.id.selectLocation)).perform(ViewActions.click())
+
+        // Click on the map to select a geo location
         onView(withId(R.id.map)).perform(ViewActions.click())
 
-        Thread.sleep(3000)
+        // sleep | wait for 2.5 seconds
+        Thread.sleep(2500)
 
+        // Click on the @+id/save_button to save the geo location
         onView(withId(R.id.save_button)).perform(ViewActions.click())
 
+        // saveReminder | click on the @+id/saveReminder to save the reminder
         onView(withId(R.id.saveReminder)).perform(ViewActions.click())
 
+        // Check if the Toast message "Reminder Saved!" is displayed
         onView(withText(R.string.reminder_saved)).inRoot(
             RootMatchers.withDecorView(
                 CoreMatchers.not(
@@ -204,7 +234,9 @@ class RemindersActivityTest : KoinTest {
             )
         ).check(ViewAssertions.matches(isDisplayed()))
 
+        // Make sure the activity is closed
         activityScenario.close()
+
     }
 
     /**
@@ -213,26 +245,43 @@ class RemindersActivityTest : KoinTest {
     @Test
     fun show_Snackbar_message() {
 
+        // Start and Monitory the RemindersActivity
         val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
 
+        // + FAB: click on the FAB to add a new reminder from the RemindersListFragment
         onView(withId(R.id.addReminderFAB)).perform(ViewActions.click())
+
+
         onView(withId(R.id.reminderDescription))
             .perform(ViewActions.replaceText("Test Description"))
 
-        Thread.sleep(1000)
+        // sleep | wait for 2.5 seconds
+        Thread.sleep(2500)
 
+        // Click on the @+id/selectLocation to select a geo location
         onView(withId(R.id.selectLocation)).perform(ViewActions.click())
+
+        // Click on the map to select a geo location
         onView(withId(R.id.map)).perform(ViewActions.click())
 
-        Thread.sleep(3000)
+        // sleep | wait for 2.5 seconds
+        Thread.sleep(2500)
 
+        // Click on the @+id/save_button to save the geo location
         onView(withId(R.id.save_button)).perform(ViewActions.click())
+
+        // saveReminder | click on the @+id/saveReminder to save the reminder
         onView(withId(R.id.saveReminder)).perform(ViewActions.click())
 
+        // Check if the Snackbar message "Please make sure you\'ve selected a location and added
+        // title and description before saving" is displayed
         onView(withId(com.google.android.material.R.id.snackbar_text))
             .check(ViewAssertions.matches(withText(R.string.save_reminder_error_desc)))
+
+        // Make sure the activity is closed
         activityScenario.close()
+
     }
 
 }
