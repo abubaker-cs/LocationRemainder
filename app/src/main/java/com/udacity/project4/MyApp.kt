@@ -41,7 +41,7 @@ class MyApp : Application() {
              */
 
             //Declare singleton definitions to be later injected using by inject()
-            single {
+            viewModel {
                 SaveReminderViewModel(
                     get(),
                     get() as ReminderDataSource
@@ -59,13 +59,13 @@ class MyApp : Application() {
             /**
              * Factory - It will create a new instance of MainRepositoryImpl every time it is requested
              */
-            factory {
-
-                // If we have two view models that need the same repository, we can use the single
-                // keyword to create a single instance of the repository and share it across the application
-                RemindersLocalRepository(get())
-
-            }
+//            factory {
+//
+//                // If we have two view models that need the same repository, we can use the single
+//                // keyword to create a single instance of the repository and share it across the application
+//                RemindersLocalRepository(get())
+//
+//            }
 
         }
 

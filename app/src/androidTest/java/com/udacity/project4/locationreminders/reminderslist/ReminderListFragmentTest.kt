@@ -6,6 +6,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -17,7 +18,7 @@ import androidx.test.filters.MediumTest
 import com.udacity.project4.R
 import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
-import com.udacity.project4.locationreminders.data.local.LocalDB
+import com.udacity.project4.locationreminders.data.local.RemindersDatabase
 import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -46,13 +47,6 @@ import org.mockito.Mockito.verify
 @MediumTest
 class ReminderListFragmentTest : AutoCloseKoinTest() {
 
-    // DONE: test the navigation of the fragments.
-
-
-    // DONE: test the displayed data on the UI.
-
-
-    // DONE: add testing for the error messages.
     private lateinit var dataSource: ReminderDataSource
     private lateinit var appContext: Application
 
@@ -61,7 +55,7 @@ class ReminderListFragmentTest : AutoCloseKoinTest() {
     var instantExecutorRule = InstantTaskExecutorRule()
 
     @Before
-    fun setup() {
+    fun init() {
         stopKoin()
         appContext = getApplicationContext()
 
@@ -69,23 +63,33 @@ class ReminderListFragmentTest : AutoCloseKoinTest() {
          * use Koin Library as a service locator
          */
         val myModule = module {
-            //Declare a ViewModel - be later inject into Fragment with dedicated injector using by viewModel()
+            // Declare a ViewModel - be later inject into Fragment with dedicated injector using by viewModel()
             viewModel {
                 RemindersListViewModel(
-                    get(),
+                    appContext,
                     get() as ReminderDataSource
                 )
             }
-            //Declare singleton definitions to be later injected using by inject()
+
+            // Declare singleton definitions to be later injected using by inject()
             single {
                 //This view model is declared singleton to be used across multiple fragments
                 SaveReminderViewModel(
-                    get(),
+                    appContext,
                     get() as ReminderDataSource
                 )
             }
             single { RemindersLocalRepository(get()) }
-            single { LocalDB.createRemindersDao(appContext) }
+
+            single {
+                Room.inMemoryDatabaseBuilder(
+                    getApplicationContext(),
+                    RemindersDatabase::class.java
+                )
+                    .allowMainThreadQueries()
+                    .build()
+                    .reminderDao()
+            }
         }
 
         startKoin {
@@ -93,14 +97,6 @@ class ReminderListFragmentTest : AutoCloseKoinTest() {
             modules(listOf(myModule))
         }
 
-        // TODO - get() jUnit
-        // remindersRepository = get()
-        dataSource = RemindersLocalRepository(LocalDB.createRemindersDao(appContext))
-
-
-        runBlocking {
-            dataSource.deleteAllReminders()
-        }
     }
 
     @Test
@@ -109,6 +105,7 @@ class ReminderListFragmentTest : AutoCloseKoinTest() {
         val scenario = launchFragmentInContainer<ReminderListFragment>(Bundle(), R.style.AppTheme)
 
         val navController = mock(NavController::class.java)
+
         scenario.onFragment {
             Navigation.setViewNavController(it.view!!, navController)
         }
@@ -126,6 +123,7 @@ class ReminderListFragmentTest : AutoCloseKoinTest() {
 
     @Test
     fun reminderIsShownInRecyclerView() {
+
         runBlocking {
             // GIVEN - one reminder
             val reminder1 = ReminderDTO(
