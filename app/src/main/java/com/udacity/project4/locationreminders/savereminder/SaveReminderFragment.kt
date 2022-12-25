@@ -141,10 +141,18 @@ class SaveReminderFragment : BaseFragment() {
      */
     @RequiresApi(Build.VERSION_CODES.S)
     private fun checkPermissionsAndStartGeofencing() {
+
+        // Check if the foreground and background location permissions have been granted
         if (foregroundAndBackgroundLocationPermissionApproved()) {
+
+            // Check if the device location is enabled
             checkDeviceLocationSettingsAndStartGeofence()
+
         } else {
+
+            // Request foreground and background location permissions
             requestForegroundAndBackgroundLocationPermissions()
+
         }
     }
 
@@ -185,29 +193,44 @@ class SaveReminderFragment : BaseFragment() {
             priority = LocationRequest.PRIORITY_LOW_POWER
         }
 
+        // Configurations
         val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
         val settingsClient = LocationServices.getSettingsClient(requireContext())
         val locationSettingsResponseTask = settingsClient.checkLocationSettings(builder.build())
 
+        // On Failure: Request Location
         locationSettingsResponseTask.addOnFailureListener { exception ->
             if (exception is ResolvableApiException && resolve) {
                 try {
+
+                    // Start Intent Sender
                     startIntentSenderForResult(
                         exception.resolution.intentSender,
                         REQUEST_TURN_DEVICE_LOCATION_ON, null, 0, 0, 0, null
                     )
+
                 } catch (e: IntentSender.SendIntentException) {
+
+                    // Log error
                     Log.d("Can't get location: ", e.message!!)
+
                 }
             } else {
+
+                // Request the user to enable device location
                 Snackbar.make(
                     binding.root,
                     R.string.location_required_error, Snackbar.LENGTH_INDEFINITE
                 ).setAction(android.R.string.ok) {
+
+                    // Check Device Location Settings
                     checkDeviceLocationSettingsAndStartGeofence()
+
                 }.show()
             }
         }
+
+        // On Success: Add Geofence
         locationSettingsResponseTask.addOnCompleteListener {
             if (it.isSuccessful) {
                 addGeofenceForReminder()
@@ -215,6 +238,9 @@ class SaveReminderFragment : BaseFragment() {
         }
     }
 
+    /**
+     * Add Geofence Reminder
+     */
     @RequiresApi(Build.VERSION_CODES.S)
     @SuppressLint("MissingPermission")
     private fun addGeofenceForReminder() {
