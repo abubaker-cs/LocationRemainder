@@ -48,5 +48,7 @@
     <string name="save_reminder_error_desc">Please make sure you\'ve selected a location and added title and description before saving</string>
     <string name="geofence_added">Geofence added successfully</string>
     <string name="save_remainder">Save Remainder</string>
+    <string name="icon_saved_location">Icon for the Saved Location</string>
+    <string name="destination_arrived">You reached at the destination!</string>
 
 </resources>

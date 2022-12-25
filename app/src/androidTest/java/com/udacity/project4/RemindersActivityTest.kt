@@ -158,9 +158,8 @@ class RemindersActivityTest : AutoCloseKoinTest() {
     /**
      * Add a new reminder
      */
-    // Passed Test
     @Test
-    fun saveReminder_displayReminder() = runBlocking {
+    fun confirm_geofence_successfully_added() = runBlocking {
 
         // Start and Monitory the RemindersActivity
         val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
@@ -172,13 +171,27 @@ class RemindersActivityTest : AutoCloseKoinTest() {
         // Confirm that we are on the SaveReminderFragment by using @+id/reminderTitle
         onView(withId(R.id.reminderTitle)).check(ViewAssertions.matches(isDisplayed()))
 
+        // Update Title: Workout
         onView(withId(R.id.reminderTitle)).perform(ViewActions.replaceText("New title"))
-        onView(withId(R.id.reminderDescription)).perform(ViewActions.replaceText("New description"))
+
+        // Update Description: Visit gym for the legs workout
+        onView(withId(R.id.reminderDescription)).perform(ViewActions.replaceText("Visit gym for the legs workout"))
+
+        // Update Location: click on the location EditText to open the SelectLocationFragment
         onView(withId(R.id.selectLocation)).perform(ViewActions.click())
+
+        // Click on the map to select a location
         onView(withId(R.id.map)).perform(ViewActions.longClick())
+
+        // Click on the save button to save the selected location
         onView(withId(R.id.save_button)).perform(ViewActions.click())
+
+        // Save the reminder
         onView(withId(R.id.saveReminder)).perform(ViewActions.click())
         onView(withId(R.id.addReminderFAB)).perform(ViewActions.click())
+
+        //  Confirm that the reminder was saved by checking that the snackbar appeared with the
+        //  correct text "Geofence Added Successfully"
         onView(withId(com.google.android.material.R.id.snackbar_text)).check(
             ViewAssertions.matches(
                 withText(R.string.geofences_added)
@@ -197,9 +210,8 @@ class RemindersActivityTest : AutoCloseKoinTest() {
     /**
      * Add a new reminder and check that it is displayed on the screen using the Toast message
      */
-    // Passed test
     @Test
-    fun show_toast_message() {
+    fun show_success_message() {
 
         val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
@@ -209,11 +221,11 @@ class RemindersActivityTest : AutoCloseKoinTest() {
 
         // Confirm that we are on the SaveReminderFragment by using @+id/reminderTitle
         onView(withId(R.id.reminderTitle))
-            .perform(ViewActions.replaceText("Test Title"))
+            .perform(ViewActions.replaceText("Workout"))
 
         // Add "Test Description" to the @+id/reminderDescription
         onView(withId(R.id.reminderDescription))
-            .perform(ViewActions.replaceText("Test Description"))
+            .perform(ViewActions.replaceText("Visit gym for the biceps workout"))
 
         // sleep | wait for 2.5 seconds
         Thread.sleep(2500)
@@ -254,9 +266,8 @@ class RemindersActivityTest : AutoCloseKoinTest() {
     /**
      * Add a new reminder and check that it is displayed on the screen using the Snackbar message
      */
-    // Failed test
     @Test
-    fun show_Snackbar_message() {
+    fun show_validation_error_message() {
 
         // Start and Monitory the RemindersActivity
         val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
@@ -267,7 +278,7 @@ class RemindersActivityTest : AutoCloseKoinTest() {
 
 
         onView(withId(R.id.reminderDescription))
-            .perform(ViewActions.replaceText("Test Description"))
+            .perform(ViewActions.replaceText("Visit gym for the back workout"))
 
         // sleep | wait for 2.5 seconds
         Thread.sleep(2500)

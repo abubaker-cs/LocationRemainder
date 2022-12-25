@@ -147,10 +147,11 @@ class ReminderListFragmentTest : AutoCloseKoinTest() {
         val remindersDao: RemindersDao = get()
 
         val reminder = ReminderDTO(
-            "title",
-            "desc",
-            "loc",
-            0.0, 0.0
+            "Workout",
+            "Visit gym for the legs workout",
+            "Bahira Town",
+            31.37150220702937,
+            74.18466379217382,
         )
 
 
@@ -175,10 +176,11 @@ class ReminderListFragmentTest : AutoCloseKoinTest() {
         val remindersDao: RemindersDao = get()
 
         val reminder = ReminderDTO(
-            "title",
-            "desc",
-            "loc",
-            0.0, 0.0
+            "Workout",
+            "Visit gym for the biceps workout",
+            "Bahira Town",
+            31.37150220702937,
+            74.18466379217382,
         )
 
         remindersDao.saveReminder(reminder)
