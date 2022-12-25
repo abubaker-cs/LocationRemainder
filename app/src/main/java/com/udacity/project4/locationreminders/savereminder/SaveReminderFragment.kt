@@ -185,6 +185,10 @@ class SaveReminderFragment : BaseFragment() {
         return foregroundLocationApproved && backgroundPermissionApproved
     }
 
+    /**
+     * checkDeviceLocationSettingsAndStartGeofence() - Check if the device location is enabled,
+     * and if it is, start saving geofence
+     */
     @Suppress("DEPRECATION")
     @RequiresApi(Build.VERSION_CODES.S)
     private fun checkDeviceLocationSettingsAndStartGeofence(resolve: Boolean = true) {
@@ -244,9 +248,12 @@ class SaveReminderFragment : BaseFragment() {
     @RequiresApi(Build.VERSION_CODES.S)
     @SuppressLint("MissingPermission")
     private fun addGeofenceForReminder() {
+
         if (this::reminder.isInitialized) {
+
             val currentGeofenceData = reminder
 
+            // Prepare the Geofence object
             val geofence = Geofence.Builder()
                 .setRequestId(currentGeofenceData.id)
                 .setCircularRegion(
@@ -258,15 +265,17 @@ class SaveReminderFragment : BaseFragment() {
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
                 .build()
 
+            // Prepare the Geofencing Request
             val geofencingRequest = GeofencingRequest.Builder()
                 .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
                 .addGeofence(geofence)
                 .build()
 
-
+            // Prepare the Geofence Pending Intent
             val intent = Intent(requireContext(), GeofenceBroadcastReceiver::class.java)
             intent.action = ACTION_GEOFENCE_EVENT
 
+            // PendingIntent.getBroadcast(context, requestCode, intent, flags)
             val geofencePendingIntent = PendingIntent.getBroadcast(
                 requireContext(),
                 0,
@@ -274,12 +283,17 @@ class SaveReminderFragment : BaseFragment() {
                 PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
             )
 
+            // Add Geofence
             geofencingClient.addGeofences(geofencingRequest, geofencePendingIntent).run {
+
+                // On Success
                 addOnSuccessListener {
                     _viewModel.showSnackBarInt.value = R.string.geofences_added
                     _viewModel.validateAndSaveReminder(reminder)
                     Log.i("Added geofence: ", geofence.requestId)
                 }
+
+                // On Failure:
                 addOnFailureListener {
                     _viewModel.showSnackBarInt.value = R.string.geofences_not_added
                     if ((it.message != null)) {
@@ -288,15 +302,25 @@ class SaveReminderFragment : BaseFragment() {
                 }
             }
         }
+
+        // Navigate to Reminders List
         _viewModel.navigationCommand.value = NavigationCommand.BackTo(R.id.reminderListFragment)
+
     }
 
+    /**
+     * Request foreground and background location permissions
+     */
     @Suppress("DEPRECATION")
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun requestForegroundAndBackgroundLocationPermissions() {
-        if (foregroundAndBackgroundLocationPermissionApproved())
-            return
+
+        if (foregroundAndBackgroundLocationPermissionApproved()) return
+
+        // Prepare the list of permissions to be requested
         var permissionsArray = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
+
+        // Prepare the resultCode
         val resultCode = when {
             runningQOrLater -> {
                 permissionsArray += Manifest.permission.ACCESS_BACKGROUND_LOCATION
@@ -304,12 +328,14 @@ class SaveReminderFragment : BaseFragment() {
             }
             else -> REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE
         }
-        requestPermissions(
-            permissionsArray,
-            resultCode
-        )
+
+        // Request Permissions
+        requestPermissions(permissionsArray, resultCode)
     }
 
+    /**
+     * onRequestPermissionsResult
+     */
     @Deprecated("Deprecated in Java")
     @RequiresApi(Build.VERSION_CODES.S)
     override fun onRequestPermissionsResult(
@@ -317,6 +343,8 @@ class SaveReminderFragment : BaseFragment() {
         permissions: Array<String>,
         grantResults: IntArray
     ) {
+
+        // Log the message
         Log.d(TAG_SAVE, "onRequestPermissionResult")
 
         if (
@@ -326,6 +354,7 @@ class SaveReminderFragment : BaseFragment() {
                     grantResults[BACKGROUND_LOCATION_PERMISSION_INDEX] ==
                     PackageManager.PERMISSION_DENIED)
         ) {
+
             // Permission denied.
             Snackbar.make(
                 binding.saveReminderFragment,
@@ -339,8 +368,12 @@ class SaveReminderFragment : BaseFragment() {
                         flags = Intent.FLAG_ACTIVITY_NEW_TASK
                     })
                 }.show()
+
         } else {
+
+            // Check Device Location Settings and Start Geofence
             checkDeviceLocationSettingsAndStartGeofence()
+
         }
     }
 
