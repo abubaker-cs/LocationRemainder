@@ -96,6 +96,9 @@ class RemindersActivityTest : AutoCloseKoinTest() {
                 RemindersLocalRepository(get())
             }
 
+            // ReminderDataSource
+            single<ReminderDataSource> { get<RemindersLocalRepository>() }
+
             // DAO
             single {
                 LocalDB.createRemindersDao(appContext)
@@ -155,6 +158,7 @@ class RemindersActivityTest : AutoCloseKoinTest() {
     /**
      * Add a new reminder
      */
+    // Passed Test
     @Test
     fun saveReminder_displayReminder() = runBlocking {
 
@@ -189,6 +193,7 @@ class RemindersActivityTest : AutoCloseKoinTest() {
     /**
      * Add a new reminder and check that it is displayed on the screen using the Toast message
      */
+    // Passed test
     @Test
     fun show_toast_message() {
 
@@ -243,6 +248,7 @@ class RemindersActivityTest : AutoCloseKoinTest() {
     /**
      * Add a new reminder and check that it is displayed on the screen using the Snackbar message
      */
+    // Failed test
     @Test
     fun show_Snackbar_message() {
 
@@ -278,7 +284,7 @@ class RemindersActivityTest : AutoCloseKoinTest() {
         // Check if the Snackbar message "Please make sure you\'ve selected a location and added
         // title and description before saving" is displayed
         onView(withId(com.google.android.material.R.id.snackbar_text))
-            .check(ViewAssertions.matches(withText(R.string.save_reminder_error_desc)))
+            .check(ViewAssertions.matches(withText(R.string.err_enter_title)))
 
         // Make sure the activity is closed
         activityScenario.close()
