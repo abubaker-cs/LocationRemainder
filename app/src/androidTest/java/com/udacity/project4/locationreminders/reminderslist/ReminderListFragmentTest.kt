@@ -119,7 +119,7 @@ class ReminderListFragmentTest : AutoCloseKoinTest() {
 
     // Passed test
     @Test
-    fun clickTask_navigateToSaveReminderFragment() {
+    fun navigate_to_SaveReminderFragment() {
         // GIVEN - On the home screen
         val scenario = launchFragmentInContainer<ReminderListFragment>(Bundle(), R.style.AppTheme)
 
@@ -142,7 +142,7 @@ class ReminderListFragmentTest : AutoCloseKoinTest() {
 
     // Passed Test
     @Test
-    fun reminderListFragment_DisplayedInUi() = runBlockingTest {
+    fun update_reminders_list() = runBlockingTest {
 
         val remindersDao: RemindersDao = get()
 
@@ -154,24 +154,25 @@ class ReminderListFragmentTest : AutoCloseKoinTest() {
             74.18466379217382,
         )
 
-
         remindersDao.saveReminder(reminder)
 
         launchFragmentInContainer<ReminderListFragment>(Bundle(), R.style.AppTheme)
 
         onView(ViewMatchers.withText(reminder.title)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+
         onView(ViewMatchers.withText(reminder.description)).check(
             ViewAssertions.matches(
                 ViewMatchers.isDisplayed()
             )
         )
+
         onView(ViewMatchers.withText(reminder.location)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
 
     }
 
     // Passed test
     @Test
-    fun deleteAllReminders_displayNoDataTextView() = runBlockingTest {
+    fun add_and_delete_all_reminders() = runBlockingTest {
 
         val remindersDao: RemindersDao = get()
 
