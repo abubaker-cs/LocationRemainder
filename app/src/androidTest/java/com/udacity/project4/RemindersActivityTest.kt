@@ -172,7 +172,7 @@ class RemindersActivityTest : AutoCloseKoinTest() {
         onView(withId(R.id.reminderTitle)).check(ViewAssertions.matches(isDisplayed()))
 
         // Update Title: Workout
-        onView(withId(R.id.reminderTitle)).perform(ViewActions.replaceText("New title"))
+        onView(withId(R.id.reminderTitle)).perform(ViewActions.replaceText("Workout"))
 
         // Update Description: Visit gym for the legs workout
         onView(withId(R.id.reminderDescription)).perform(ViewActions.replaceText("Visit gym for the legs workout"))
@@ -276,7 +276,7 @@ class RemindersActivityTest : AutoCloseKoinTest() {
         // + FAB: click on the FAB to add a new reminder from the RemindersListFragment
         onView(withId(R.id.addReminderFAB)).perform(ViewActions.click())
 
-
+        // Only update the description: "Visit gym for the biceps workout"
         onView(withId(R.id.reminderDescription))
             .perform(ViewActions.replaceText("Visit gym for the back workout"))
 
