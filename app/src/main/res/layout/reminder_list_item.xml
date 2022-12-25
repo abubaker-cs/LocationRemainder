@@ -10,10 +10,12 @@
             name="item"
             type="com.udacity.project4.locationreminders.reminderslist.ReminderDataItem"
             />
+
     </data>
 
+    <!-- CardView -->
     <androidx.cardview.widget.CardView
-        android:id="@+id/reminderCardView"
+        android:id="@+id/listItem_cv_reminder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/padding_medium"
@@ -27,7 +29,7 @@
             >
 
             <TextView
-                android:id="@+id/title"
+                android:id="@+id/listItem_tv_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/padding_small"
@@ -41,13 +43,13 @@
                 />
 
             <TextView
-                android:id="@+id/description"
+                android:id="@+id/listItem_tv_description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@{item.description}"
                 android:textSize="@dimen/text_size_small"
-                app:layout_constraintStart_toStartOf="@id/title"
-                app:layout_constraintTop_toBottomOf="@id/title"
+                app:layout_constraintStart_toStartOf="@id/listItem_tv_title"
+                app:layout_constraintTop_toBottomOf="@id/listItem_tv_title"
                 tools:text="Description"
                 />
 
@@ -58,9 +60,9 @@
                 android:text="@{item.location}"
                 android:textColor="@color/colorAccent"
                 android:textSize="@dimen/text_size_small"
-                app:layout_constraintBottom_toBottomOf="@+id/description"
+                app:layout_constraintBottom_toBottomOf="@+id/listItem_tv_description"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/title"
+                app:layout_constraintTop_toTopOf="@+id/listItem_tv_title"
                 tools:text="Location"
                 />
 

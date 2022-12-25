@@ -174,11 +174,6 @@ dependencies {
 
     implementation "androidx.fragment:fragment-ktx:$fragmentVersion"
 
-    // Koin
-    // implementation "io.insert-koin:koin-android:$koinVersion"
-    // implementation "io.insert-koin:koin-android-compat:$koinVersion"
-    // implementation "io.insert-koin:koin-androidx-navigation:$koinVersion"
-
     // UI | Instrumental Testing - Mockito
     androidTestImplementation "org.mockito:mockito-core:$mockitoVersion"
     androidTestImplementation "com.linkedin.dexmaker:dexmaker-mockito:$dexMakerVersion"
