@@ -172,14 +172,18 @@ class RemindersActivityTest : AutoCloseKoinTest() {
         // Confirm that we are on the SaveReminderFragment by using @+id/reminderTitle
         onView(withId(R.id.reminderTitle)).check(ViewAssertions.matches(isDisplayed()))
 
-//        onView(withId(R.id.reminderTitle)).perform(ViewActions.replaceText("New title"))
-//        onView(withId(R.id.reminderDescription)).perform(ViewActions.replaceText("New description"))
-//        onView(withId(R.id.selectLocation)).perform(ViewActions.click())
-//        onView(withId(R.id.map)).perform(ViewActions.longClick())
-//        onView(withId(R.id.save_button)).perform(ViewActions.click())
-//        onView(withId(R.id.saveReminder)).perform(ViewActions.click())
-//        onView(withId(R.id.addReminderFAB)).perform(ViewActions.click())
-//        onView(withId(com.google.android.material.R.id.snackbar_text)).check(ViewAssertions.matches(withText(R.string.geofences_added)))
+        onView(withId(R.id.reminderTitle)).perform(ViewActions.replaceText("New title"))
+        onView(withId(R.id.reminderDescription)).perform(ViewActions.replaceText("New description"))
+        onView(withId(R.id.selectLocation)).perform(ViewActions.click())
+        onView(withId(R.id.map)).perform(ViewActions.longClick())
+        onView(withId(R.id.save_button)).perform(ViewActions.click())
+        onView(withId(R.id.saveReminder)).perform(ViewActions.click())
+        onView(withId(R.id.addReminderFAB)).perform(ViewActions.click())
+        onView(withId(com.google.android.material.R.id.snackbar_text)).check(
+            ViewAssertions.matches(
+                withText(R.string.geofences_added)
+            )
+        )
 
         // Make sure the activity is closed
         // ================================
@@ -228,6 +232,8 @@ class RemindersActivityTest : AutoCloseKoinTest() {
 
         // saveReminder | click on the @+id/saveReminder to save the reminder
         onView(withId(R.id.saveReminder)).perform(ViewActions.click())
+
+        onView(withId(R.id.addReminderFAB)).perform(ViewActions.click())
 
         // Check if the Toast message "Reminder Saved!" is displayed
         onView(withText(R.string.reminder_saved)).inRoot(
