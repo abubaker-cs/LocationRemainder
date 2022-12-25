@@ -18,11 +18,12 @@ import androidx.test.filters.MediumTest
 import com.udacity.project4.R
 import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
+import com.udacity.project4.locationreminders.data.local.RemindersDao
 import com.udacity.project4.locationreminders.data.local.RemindersDatabase
 import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
@@ -34,6 +35,7 @@ import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import org.koin.test.AutoCloseKoinTest
+import org.koin.test.get
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
 
@@ -47,7 +49,6 @@ import org.mockito.Mockito.verify
 @MediumTest
 class ReminderListFragmentTest : AutoCloseKoinTest() {
 
-    private lateinit var dataSource: ReminderDataSource
     private lateinit var appContext: Application
 
     // Executes each task synchronously using Architecture Components.
@@ -79,7 +80,24 @@ class ReminderListFragmentTest : AutoCloseKoinTest() {
                     get() as ReminderDataSource
                 )
             }
+
+            // RemindersLocalRepository
             single { RemindersLocalRepository(get()) }
+
+            /**
+             * Note: Adding following line of code has resolved this issue:
+             * single<ReminderDataSource> { get<RemindersLocalRepository>() }
+             * =====================================================
+             * Caused by: org.koin.core.error.NoBeanDefFoundException: No definition found for
+             * 'com.udacity.project4.locationreminders.data.ReminderDataSource' has been found.
+             * Check your module definitions.
+             *
+             * Reference:
+             * https://stackoverflow.com/questions/57535800/koin-nobeandeffoundexception-check-your-module-definitions
+             */
+
+            // ReminderDataSource
+            single<ReminderDataSource> { get<RemindersLocalRepository>() }
 
             single {
                 Room.inMemoryDatabaseBuilder(
@@ -99,6 +117,7 @@ class ReminderListFragmentTest : AutoCloseKoinTest() {
 
     }
 
+    // Passed test
     @Test
     fun clickTask_navigateToSaveReminderFragment() {
         // GIVEN - On the home screen
@@ -121,43 +140,56 @@ class ReminderListFragmentTest : AutoCloseKoinTest() {
         )
     }
 
+    // Passed Test
     @Test
-    fun reminderIsShownInRecyclerView() {
+    fun reminderListFragment_DisplayedInUi() = runBlockingTest {
 
-        runBlocking {
-            // GIVEN - one reminder
-            val reminder1 = ReminderDTO(
-                "title1",
-                "description1",
-                "somewhere1",
-                11.0,
-                11.0,
-                "random1"
+        val remindersDao: RemindersDao = get()
+
+        val reminder = ReminderDTO(
+            "title",
+            "desc",
+            "loc",
+            0.0, 0.0
+        )
+
+
+        remindersDao.saveReminder(reminder)
+
+        launchFragmentInContainer<ReminderListFragment>(Bundle(), R.style.AppTheme)
+
+        onView(ViewMatchers.withText(reminder.title)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        onView(ViewMatchers.withText(reminder.description)).check(
+            ViewAssertions.matches(
+                ViewMatchers.isDisplayed()
             )
-            dataSource.saveReminder(reminder1)
+        )
+        onView(ViewMatchers.withText(reminder.location)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
 
-            // WHEN - ReminderListFragment is displayed
-            launchFragmentInContainer<ReminderListFragment>(Bundle(), R.style.AppTheme)
+    }
 
-            // THEN - the reminder is displayed
-            onView(ViewMatchers.withText(reminder1.title)).check(
-                ViewAssertions.matches(
-                    ViewMatchers.isDisplayed()
-                )
-            )
+    // Passed test
+    @Test
+    fun deleteAllReminders_displayNoDataTextView() = runBlockingTest {
 
-            onView(ViewMatchers.withText(reminder1.description)).check(
-                ViewAssertions.matches(
-                    ViewMatchers.isDisplayed()
-                )
-            )
+        val remindersDao: RemindersDao = get()
 
-            onView(ViewMatchers.withText(reminder1.location)).check(
-                ViewAssertions.matches(
-                    ViewMatchers.isDisplayed()
-                )
-            )
+        val reminder = ReminderDTO(
+            "title",
+            "desc",
+            "loc",
+            0.0, 0.0
+        )
 
-        }
+        remindersDao.saveReminder(reminder)
+
+        launchFragmentInContainer<ReminderListFragment>(Bundle(), R.style.AppTheme)
+
+        remindersDao.deleteAllReminders()
+
+        launchFragmentInContainer<ReminderListFragment>(Bundle(), R.style.AppTheme)
+
+        onView(withId(R.id.noDataTextView)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+
     }
 }
